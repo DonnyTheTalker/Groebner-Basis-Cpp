@@ -43,6 +43,19 @@ TEST(ModuloBasic, Getters) {
     EXPECT_TRUE(x.IsZero());
 }
 
+TEST(ModuloBasic, Comparison) {
+    EXPECT_TRUE(Modulo(13, 1) < Modulo(13, 2));
+    EXPECT_TRUE(Modulo(13, 1) < Modulo(13, 28));
+    EXPECT_TRUE(Modulo(13, 1) <= Modulo(13, 1));
+    EXPECT_TRUE(Modulo(13, 1) <= Modulo(13, 2));
+    EXPECT_TRUE(Modulo(13, 1) == Modulo(13, 1));
+    EXPECT_TRUE(Modulo(13, 1) != Modulo(13, 2));
+    EXPECT_TRUE(Modulo(13, 1) != Modulo(7, 1));
+    EXPECT_TRUE(Modulo(13, 1) > Modulo(13, 0));
+    EXPECT_TRUE(Modulo(13, 1) >= Modulo(13, 0));
+    EXPECT_TRUE(Modulo(13, 1) >= Modulo(13, 1));
+}
+
 TEST(ModuloArithmetics, Inversion) {
     {
         Modulo x(7, 1);

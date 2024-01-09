@@ -137,4 +137,20 @@ bool Modulo::operator==(const Modulo &other) const {
     return value_ == other.value_ && order_ == other.order_;
 }
 
+bool Modulo::operator<(const Modulo &other) const {
+    return order_ == other.order_ && value_ < other.value_;
+}
+
+bool Modulo::operator<=(const Modulo &other) const {
+    return order_ == other.order_ && value_ <= other.value_;
+}
+
+bool Modulo::operator>(const Modulo &other) const {
+    return order_ == other.order_ && value_ > other.value_;
+}
+
+bool Modulo::operator>=(const Modulo &other) const {
+    return order_ == other.order_ && value_ >= other.value_;
+}
+
 

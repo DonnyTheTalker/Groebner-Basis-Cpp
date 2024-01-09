@@ -28,7 +28,11 @@ public:
     Modulo operator*(const Modulo &other) const;
     Modulo operator/(const Modulo &other) const;
 
-    bool operator==(const Modulo& other) const;
+    bool operator==(const Modulo &other) const;
+    bool operator<(const Modulo &other) const;
+    bool operator<=(const Modulo &other) const;
+    bool operator>(const Modulo &other) const;
+    bool operator>=(const Modulo &other) const;
 
 private:
     void Normalize();
