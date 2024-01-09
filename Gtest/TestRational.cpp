@@ -107,3 +107,25 @@ TEST(Arithmetics, Division) {
 
     EXPECT_DEATH(x /= Rational(0), "Can't divide by zero");
 }
+
+TEST(Arithmetics, General) {
+    Rational x, y, z;
+
+    x = Rational(7, 2);
+    y = x + x;
+    z = x * Rational(2);
+    EXPECT_EQ(y, z);
+
+    x = Rational(1);
+    x = x + x + x;
+    EXPECT_EQ(x, Rational(3));
+
+    x = x * x * x;
+    EXPECT_EQ(x, Rational(27));
+
+    x = Rational(3, 2);
+    y = Rational(4);
+    z = Rational(5, 7);
+
+    EXPECT_EQ(x + y / z, Rational(71, 10));
+}
