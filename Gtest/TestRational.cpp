@@ -1,15 +1,15 @@
 #include "gtest/gtest.h"
 #include "Rational.h"
 
-TEST(Basic, Construction) {
+TEST(RationalBasic, Construction) {
     EXPECT_NO_THROW(Rational());
     EXPECT_NO_THROW(Rational(1));
     EXPECT_NO_THROW(Rational(0));
     EXPECT_NO_THROW(Rational(1, 1));
-    EXPECT_DEATH(Rational(3, 0), "Denominator must not be zero!");
+    EXPECT_DEATH(Rational(3, 0), "Denominator must not be zero");
 }
 
-TEST(Basic, Reduction) {
+TEST(RationalBasic, Reduction) {
     EXPECT_EQ(Rational(1, 3), Rational(2, 6));
     EXPECT_EQ(Rational(3), Rational(3, 1));
     EXPECT_EQ(Rational(3), Rational(6, 2));
@@ -17,7 +17,7 @@ TEST(Basic, Reduction) {
     EXPECT_EQ(Rational(-3, 2), Rational(3, -2));
 }
 
-TEST(Basic, Getters) {
+TEST(RationalBasic, Getters) {
     Rational x(13, 26);
     EXPECT_FALSE(x.IsZero());
     EXPECT_EQ(x.Numerator(), 1);
@@ -34,7 +34,7 @@ TEST(Basic, Getters) {
     EXPECT_EQ(x.Denominator(), 1);
 }
 
-TEST(Arithmetics, Addition) {
+TEST(RationalArithmetics, Addition) {
     Rational x;
     x += Rational(3);
     EXPECT_EQ(x, Rational(3));
@@ -58,7 +58,7 @@ TEST(Arithmetics, Addition) {
     EXPECT_EQ(x, Rational(41, 5));
 }
 
-TEST(Arithmetics, Substitution) {
+TEST(RationalArithmetics, Substitution) {
     Rational x(7, 2);
     x -= Rational(7, 2);
     EXPECT_EQ(x, Rational(0));
@@ -74,7 +74,7 @@ TEST(Arithmetics, Substitution) {
     EXPECT_EQ(x, Rational(0));
 }
 
-TEST(Arithmetics, Multiplication) {
+TEST(RationalArithmetics, Multiplication) {
     Rational x(7, 2);
     x *= Rational(0);
     EXPECT_EQ(x, Rational(0));
@@ -93,7 +93,7 @@ TEST(Arithmetics, Multiplication) {
     EXPECT_EQ(x, Rational(117, 44));
 }
 
-TEST(Arithmetics, Division) {
+TEST(RationalArithmetics, Division) {
     Rational x(7, 2);
     x /= x;
     EXPECT_EQ(x, Rational(1));
@@ -108,7 +108,7 @@ TEST(Arithmetics, Division) {
     EXPECT_DEATH(x /= Rational(0), "Can't divide by zero");
 }
 
-TEST(Arithmetics, General) {
+TEST(RationalArithmetics, General) {
     Rational x, y, z;
 
     x = Rational(7, 2);

@@ -14,9 +14,7 @@ public:
 
 public:
     ValueType Numerator() const;
-
     ValueType Denominator() const;
-
     bool IsZero() const;
 
     Rational &operator+=(const Rational &other);
@@ -24,10 +22,10 @@ public:
     Rational &operator*=(const Rational &other);
     Rational &operator/=(const Rational &other);
 
-    Rational operator+(const Rational &other);
-    Rational operator-(const Rational &other);
-    Rational operator*(const Rational &other);
-    Rational operator/(const Rational &other);
+    Rational operator+(const Rational &other) const;
+    Rational operator-(const Rational &other) const;
+    Rational operator*(const Rational &other) const;
+    Rational operator/(const Rational &other) const;
 
     bool operator==(const Rational &other) const;
 

@@ -39,7 +39,7 @@ Rational &Rational::operator=(Rational &&other) noexcept {
 }
 
 void Rational::Reduce() {
-    assert(denominator_ != 0 && "Denominator must not be zero!");
+    assert(denominator_ != 0 && "Denominator must not be zero");
     if (numerator_ == 0) {
         denominator_ = 1;
         return;
@@ -106,22 +106,22 @@ bool Rational::operator==(const Rational &other) const {
     return numerator_ == other.numerator_ && denominator_ == other.denominator_;
 }
 
-Rational Rational::operator+(const Rational &other) {
+Rational Rational::operator+(const Rational &other) const {
     Rational temp(*this);
     return temp += other;
 }
 
-Rational Rational::operator-(const Rational &other) {
+Rational Rational::operator-(const Rational &other) const {
     Rational temp(*this);
     return temp -= other;
 }
 
-Rational Rational::operator*(const Rational &other) {
+Rational Rational::operator*(const Rational &other) const {
     Rational temp(*this);
     return temp *= other;
 }
 
-Rational Rational::operator/(const Rational &other) {
+Rational Rational::operator/(const Rational &other) const {
     Rational temp(*this);
     return temp /= other;
 }
