@@ -102,10 +102,6 @@ Rational &Rational::operator/=(const Rational &other) {
     return *this;
 }
 
-bool Rational::operator==(const Rational &other) const {
-    return numerator_ == other.numerator_ && denominator_ == other.denominator_;
-}
-
 Rational Rational::operator+(const Rational &other) const {
     Rational temp(*this);
     return temp += other;
@@ -124,4 +120,30 @@ Rational Rational::operator*(const Rational &other) const {
 Rational Rational::operator/(const Rational &other) const {
     Rational temp(*this);
     return temp /= other;
+}
+
+bool Rational::operator==(const Rational &other) const {
+    return numerator_ == other.numerator_ && denominator_ == other.denominator_;
+}
+
+bool Rational::operator<(const Rational &other) const {
+    ValueType lcm = FindLcm(denominator_, other.denominator_);
+    return numerator_ * (lcm / denominator_) < other.numerator_ * (lcm / other.denominator_);
+}
+
+bool Rational::operator<=(const Rational &other) const {
+    ValueType lcm = FindLcm(denominator_, other.denominator_);
+    return numerator_ * (lcm / denominator_) <= other.numerator_ * (lcm / other.denominator_);
+
+}
+
+bool Rational::operator>(const Rational &other) const {
+    ValueType lcm = FindLcm(denominator_, other.denominator_);
+    return numerator_ * (lcm / denominator_) > other.numerator_ * (lcm / other.denominator_);
+
+}
+
+bool Rational::operator>=(const Rational &other) const {
+    ValueType lcm = FindLcm(denominator_, other.denominator_);
+    return numerator_ * (lcm / denominator_) >= other.numerator_ * (lcm / other.denominator_);
 }

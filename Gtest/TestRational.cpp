@@ -34,6 +34,17 @@ TEST(RationalBasic, Getters) {
     EXPECT_EQ(x.Denominator(), 1);
 }
 
+TEST(RationalBasic, Comparison) {
+    EXPECT_TRUE(Rational(1) < Rational(2));
+    EXPECT_TRUE(Rational(1, 2) == Rational(2, 4));
+    EXPECT_TRUE(Rational(1, 3) <= Rational(2, 4));
+    EXPECT_TRUE(Rational(5, 4) != Rational(6, 4));
+    EXPECT_TRUE(Rational(5, 4) < Rational(6, 4));
+    EXPECT_TRUE(Rational(10, 2) == Rational(5));
+    EXPECT_TRUE(Rational(10, 3) > Rational(8, 3));
+    EXPECT_TRUE(Rational(10, 3) >= Rational(8, 3));
+}
+
 TEST(RationalArithmetics, Addition) {
     Rational x;
     x += Rational(3);
