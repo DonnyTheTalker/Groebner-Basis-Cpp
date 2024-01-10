@@ -17,13 +17,16 @@ public:
     Polynomial &operator=(Polynomial &&other) = default;
 
 public:
+    const std::vector<Monomial<Field>>& GetMonomials() const;
+
+public:
     Polynomial<Field, Comparator> &operator+=(const Polynomial<Field, Comparator> &other);
     Polynomial<Field, Comparator> &operator-=(const Polynomial<Field, Comparator> &other);
     Polynomial<Field, Comparator> &operator*=(const Polynomial<Field, Comparator> &other);
 
-    Polynomial<Field, Comparator> &operator+(const Polynomial<Field, Comparator> &other) const;
-    Polynomial<Field, Comparator> &operator-(const Polynomial<Field, Comparator> &other) const;
-    Polynomial<Field, Comparator> &operator*(const Polynomial<Field, Comparator> &other) const;
+    Polynomial<Field, Comparator> operator+(const Polynomial<Field, Comparator> &other) const;
+    Polynomial<Field, Comparator> operator-(const Polynomial<Field, Comparator> &other) const;
+    Polynomial<Field, Comparator> operator*(const Polynomial<Field, Comparator> &other) const;
 
 
     bool operator==(const Polynomial<Field, Comparator> &other) const;
@@ -34,8 +37,13 @@ private:
 private:
     // assuming Monomials have different degrees (3x + 5x -> 8x)
     // no monomials with coefficient 0
-    std::vector<Monomial<Field>> monomials_;
+    std::vector<Monomial<Field>> monomials_ = {};
 };
+
+template<IsField Field, IsComparator Comparator>
+const std::vector<Monomial<Field>> &Polynomial<Field, Comparator>::GetMonomials() const {
+    return monomials_;
+}
 
 template<IsField Field, IsComparator Comparator>
 Polynomial<Field, Comparator>::Polynomial(const std::vector<Monomial<Field>> &monomials) : monomials_(monomials) {
@@ -54,7 +62,10 @@ Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator+=(const P
         if (Comparator::IsEqual(monomials_[left], other.monomials_[right])) {
             result.push_back(std::move(monomials_[left++]));
             result.back() += other.monomials_[right++];
-        } else if (Comparator::IsLess(monomials_[left], other.monomials_[right])) {
+            if (result.back().IsZero()) {
+                result.pop_back();
+            }
+        } else if (Comparator::IsGreater(monomials_[left], other.monomials_[right])) {
             result.push_back(std::move(monomials_[left++]));
         } else {
             result.push_back(other.monomials_[right++]);
@@ -84,7 +95,10 @@ Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator-=(const P
         if (Comparator::IsEqual(monomials_[left], other.monomials_[right])) {
             result.push_back(std::move(monomials_[left++]));
             result.back() -= other.monomials_[right++];
-        } else if (Comparator::IsLess(monomials_[left], other.monomials_[right])) {
+            if (result.back().IsZero()) {
+                result.pop_back();
+            }
+        } else if (Comparator::IsGreater(monomials_[left], other.monomials_[right])) {
             result.push_back(std::move(monomials_[left++]));
         } else {
             result.push_back(-other.monomials_[right++]);
@@ -107,9 +121,13 @@ Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator*=(const P
     Polynomial<Field, Comparator> result;
 
     for (size_t i = 0; i < other.monomials_.size(); i++) {
-        for (int j = 0; j < monomials_.size(); j++) {
-            result += (other.monomials_[i] * monomials_[j]);
+        // TODO optimize
+        std::vector<Monomial<Field>> row;
+        row.reserve(monomials_.size());
+        for (size_t j = 0; j < monomials_.size(); j++) {
+            row.push_back(other.monomials_[i] * monomials_[j]);
         }
+        result += Polynomial<Field, Comparator>(row);
     }
 
     monomials_ = std::move(result.monomials_);
@@ -119,19 +137,19 @@ Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator*=(const P
 }
 
 template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator+(const Polynomial<Field, Comparator> &other) const {
+Polynomial<Field, Comparator> Polynomial<Field, Comparator>::operator+(const Polynomial<Field, Comparator> &other) const {
     Polynomial<Field, Comparator> temp(*this);
     return temp += other;
 }
 
 template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator-(const Polynomial<Field, Comparator> &other) const {
+Polynomial<Field, Comparator> Polynomial<Field, Comparator>::operator-(const Polynomial<Field, Comparator> &other) const {
     Polynomial<Field, Comparator> temp(*this);
     return temp -= other;
 }
 
 template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator*(const Polynomial<Field, Comparator> &other) const {
+Polynomial<Field, Comparator> Polynomial<Field, Comparator>::operator*(const Polynomial<Field, Comparator> &other) const {
     Polynomial<Field, Comparator> temp(*this);
     return temp *= other;
 }
