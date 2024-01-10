@@ -17,6 +17,7 @@ public:
 
 public:
     SizeType GetSize() const;
+    DegreeType GetSumDegree() const;
 
     DegreeType operator[](size_t ind) const;
 
@@ -30,5 +31,6 @@ public:
 
 private:
     const SizeType n_variables_;
+    DegreeType sum_degree_;
     std::vector<DegreeType> degrees_;
 };

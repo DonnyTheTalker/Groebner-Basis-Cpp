@@ -255,16 +255,6 @@ public:
 
     template<IsField Field>
     static bool IsGreaterOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
-
-private:
-    // TODO move this to separate function inside MonomialDegree
-    inline static MonomialDegree::DegreeType GetSumDegree(const MonomialDegree &degree) {
-        MonomialDegree::DegreeType sum = 0;
-        for (MonomialDegree::SizeType i = 0; i < degree.GetSize(); ++i) {
-            sum += degree[i];
-        }
-        return sum;
-    }
 };
 
 
@@ -275,8 +265,8 @@ bool GrlexOrder::IsLess(const Monomial<Field> &lhs, const Monomial<Field> &rhs) 
     const MonomialDegree &lhs_degree = lhs.GetDegree();
     const MonomialDegree &rhs_degree = rhs.GetDegree();
 
-    MonomialDegree::DegreeType lhs_sum_degree = GetSumDegree(lhs_degree);
-    MonomialDegree::DegreeType rhs_sum_degree = GetSumDegree(rhs_degree);
+    MonomialDegree::DegreeType lhs_sum_degree = lhs_degree.GetSumDegree();
+    MonomialDegree::DegreeType rhs_sum_degree = rhs_degree.GetSumDegree();
 
     if (lhs_sum_degree < rhs_sum_degree) {
         return true;
@@ -306,8 +296,8 @@ bool GrlexOrder::IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field>
     const MonomialDegree &lhs_degree = lhs.GetDegree();
     const MonomialDegree &rhs_degree = rhs.GetDegree();
 
-    MonomialDegree::DegreeType lhs_sum_degree = GetSumDegree(lhs_degree);
-    MonomialDegree::DegreeType rhs_sum_degree = GetSumDegree(rhs_degree);
+    MonomialDegree::DegreeType lhs_sum_degree = lhs_degree.GetSumDegree();
+    MonomialDegree::DegreeType rhs_sum_degree = rhs_degree.GetSumDegree();
 
     if (lhs_sum_degree < rhs_sum_degree) {
         return true;
@@ -343,16 +333,6 @@ public:
 
     template<IsField Field>
     static bool IsGreaterOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
-
-private:
-    // TODO move this to separate function inside MonomialDegree
-    inline static MonomialDegree::DegreeType GetSumDegree(const MonomialDegree &degree) {
-        MonomialDegree::DegreeType sum = 0;
-        for (MonomialDegree::SizeType i = 0; i < degree.GetSize(); ++i) {
-            sum += degree[i];
-        }
-        return sum;
-    }
 };
 
 template<IsField Field>
@@ -362,8 +342,8 @@ bool GrevlexOrder::IsLess(const Monomial<Field> &lhs, const Monomial<Field> &rhs
     const MonomialDegree &lhs_degree = lhs.GetDegree();
     const MonomialDegree &rhs_degree = rhs.GetDegree();
 
-    MonomialDegree::DegreeType lhs_sum_degree = GetSumDegree(lhs_degree);
-    MonomialDegree::DegreeType rhs_sum_degree = GetSumDegree(rhs_degree);
+    MonomialDegree::DegreeType lhs_sum_degree = lhs_degree.GetSumDegree();
+    MonomialDegree::DegreeType rhs_sum_degree = rhs_degree.GetSumDegree();
 
     if (lhs_sum_degree < rhs_sum_degree) {
         return true;
@@ -393,8 +373,8 @@ bool GrevlexOrder::IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Fiel
     const MonomialDegree &lhs_degree = lhs.GetDegree();
     const MonomialDegree &rhs_degree = rhs.GetDegree();
 
-    MonomialDegree::DegreeType lhs_sum_degree = GetSumDegree(lhs_degree);
-    MonomialDegree::DegreeType rhs_sum_degree = GetSumDegree(rhs_degree);
+    MonomialDegree::DegreeType lhs_sum_degree = lhs_degree.GetSumDegree();
+    MonomialDegree::DegreeType rhs_sum_degree = rhs_degree.GetSumDegree();
 
     if (lhs_sum_degree < rhs_sum_degree) {
         return true;

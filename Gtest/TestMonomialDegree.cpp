@@ -7,6 +7,7 @@ TEST(DegreeBasic, Constructors) {
         std::vector<MonomialDegree::DegreeType> temp(10);
         MonomialDegree y(10, temp);
         EXPECT_EQ(x, y);
+        EXPECT_EQ(x.GetSumDegree(), 0);
     }
 
     {
@@ -20,18 +21,24 @@ TEST(DegreeBasic, Constructors) {
             EXPECT_EQ(x[i], 0);
             EXPECT_EQ(y[i], i + 1);
         }
+
+        EXPECT_EQ(x.GetSumDegree(), 0);
+        EXPECT_EQ(y.GetSumDegree(), 6);
     }
 
     {
         MonomialDegree x(3, {1, 2, 3});
         MonomialDegree y = x;
         EXPECT_EQ(x, y);
+        EXPECT_EQ(x.GetSumDegree(), y.GetSumDegree());
+        EXPECT_EQ(x.GetSumDegree(), 6);
     }
 }
 
 TEST(DegreeBasic, Getters) {
     MonomialDegree x(4, {3, 4, 120, 30});
     EXPECT_EQ(x.GetSize(), 4);
+    EXPECT_EQ(x.GetSumDegree(), 157);
     EXPECT_EQ(x[0], 3);
     EXPECT_EQ(x[1], 4);
     EXPECT_EQ(x[2], 120);
@@ -52,6 +59,16 @@ TEST(DegreeArithmetics, Addition) {
         EXPECT_EQ(x += y, MonomialDegree(3, {1, 2, 3}));
         EXPECT_EQ(x + y, MonomialDegree(3, {2, 4, 6}));
         EXPECT_EQ(x, MonomialDegree(3, {1, 2, 3}));
+        EXPECT_EQ((x + y).GetSumDegree(), x.GetSumDegree() + y.GetSumDegree());
+    }
+
+    {
+        MonomialDegree x(3, {1, 1, 1});
+        MonomialDegree y(3, {1, 2, 3});
+        EXPECT_EQ(x += y, MonomialDegree(3, {2, 3, 4}));
+        EXPECT_EQ(x + y, MonomialDegree(3, {3, 5, 7}));
+        EXPECT_EQ(x, MonomialDegree(3, {2, 3, 4}));
+        EXPECT_EQ((x + y).GetSumDegree(), x.GetSumDegree() + y.GetSumDegree());
     }
 }
 
@@ -66,10 +83,14 @@ TEST(DegreeArithmetics, Substituion) {
         MonomialDegree x(3, {1, 2, 3});
         MonomialDegree y(3, {1, 2, 3});
         EXPECT_EQ(x -= y, MonomialDegree(3));
+        EXPECT_EQ(x.GetSumDegree(), 0);
         EXPECT_EQ(x += (y + y), MonomialDegree(3, {2, 4, 6}));
+        EXPECT_EQ(x.GetSumDegree(), 12);
         EXPECT_EQ(x -= y, MonomialDegree(3, {1, 2, 3}));
+        EXPECT_EQ(x.GetSumDegree(), 6);
         EXPECT_EQ(x - y, MonomialDegree(3));
         EXPECT_EQ(x -= y, MonomialDegree(3));
+        EXPECT_EQ(x.GetSumDegree(), 0);
         EXPECT_DEATH(x - y, "Can't substitute from lower degree");
     }
 }

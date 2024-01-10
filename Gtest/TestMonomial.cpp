@@ -49,6 +49,7 @@ TEST(MonomialBasic, Getters) {
     {
         Monomial x(Rational(7, 3), MonomialDegree(3, {1, 2, 3}));
         EXPECT_EQ(x.GetSize(), 3);
+        EXPECT_EQ(x.GetDegree().GetSumDegree(), 6);
         EXPECT_EQ(x.GetCoef(), Rational(7, 3));
         EXPECT_EQ(x.GetCoef(), Rational(14, 6));
         EXPECT_EQ(x.GetDegree(), MonomialDegree(3, {1, 2, 3}));
@@ -59,6 +60,7 @@ TEST(MonomialBasic, Getters) {
     {
         Monomial x(Modulo(7, 3), MonomialDegree(3, {1, 2, 3}));
         EXPECT_EQ(x.GetSize(), 3);
+        EXPECT_EQ(x.GetDegree().GetSumDegree(), 6);
         EXPECT_EQ(x.GetCoef(), Modulo(7, 3));
         EXPECT_EQ(x.GetCoef(), Modulo(7, 10));
         EXPECT_EQ(x.GetDegree(), MonomialDegree(3, {1, 2, 3}));
@@ -68,6 +70,7 @@ TEST(MonomialBasic, Getters) {
 
     {
         Monomial x(Rational(0), MonomialDegree(3));
+        EXPECT_EQ(x.GetDegree().GetSumDegree(), 0);
         EXPECT_TRUE(x.IsZero());
     }
 }
@@ -516,5 +519,51 @@ TEST(MonomialArithmetics, General) {
 
         EXPECT_EQ((x + y) / z, x / z + y / z);
         EXPECT_EQ((x + y) / z, res);
+    }
+}
+
+TEST(MonomialArithmetics, SumDegree) {
+    {
+        Monomial x(Rational(1), MonomialDegree(2, {1, 1}));
+        Monomial y(Rational(3), MonomialDegree(2, {1, 1}));
+
+        EXPECT_EQ((x + y).GetDegree().GetSumDegree(), 2);
+        EXPECT_EQ((x + y).GetDegree().GetSumDegree(), x.GetDegree().GetSumDegree());
+        EXPECT_EQ((x + y).GetDegree().GetSumDegree(), y.GetDegree().GetSumDegree());
+        EXPECT_EQ((x += y).GetDegree().GetSumDegree(), y.GetDegree().GetSumDegree());
+        EXPECT_EQ(x.GetDegree().GetSumDegree(), 2);
+    }
+
+    {
+        Monomial x(Rational(1), MonomialDegree(2, {1, 1}));
+        Monomial y(Rational(3), MonomialDegree(2, {1, 1}));
+
+        EXPECT_EQ((x - y).GetDegree().GetSumDegree(), 2);
+        EXPECT_EQ((x - y).GetDegree().GetSumDegree(), x.GetDegree().GetSumDegree());
+        EXPECT_EQ((x - y).GetDegree().GetSumDegree(), y.GetDegree().GetSumDegree());
+        EXPECT_EQ((x -= y).GetDegree().GetSumDegree(), y.GetDegree().GetSumDegree());
+        EXPECT_EQ(x.GetDegree().GetSumDegree(), 2);
+    }
+
+    {
+        Monomial x(Rational(1), MonomialDegree(2, {1, 3}));
+        Monomial y(Rational(3), MonomialDegree(2, {1, 2}));
+
+        EXPECT_EQ((x * y).GetDegree().GetSumDegree(), 7);
+        EXPECT_EQ((x * y).GetDegree().GetSumDegree(), x.GetDegree().GetSumDegree() + y.GetDegree().GetSumDegree());
+        EXPECT_EQ((x * y).GetDegree().GetSumDegree(), x.GetDegree().GetSumDegree() + y.GetDegree().GetSumDegree());
+        EXPECT_EQ((x *= y).GetDegree().GetSumDegree(), 7);
+        EXPECT_EQ(x.GetDegree().GetSumDegree(), 7);
+    }
+
+    {
+        Monomial x(Rational(1), MonomialDegree(2, {1, 3}));
+        Monomial y(Rational(3), MonomialDegree(2, {1, 2}));
+
+        EXPECT_EQ((x / y).GetDegree().GetSumDegree(), 1);
+        EXPECT_EQ((x / y).GetDegree().GetSumDegree(), x.GetDegree().GetSumDegree() - y.GetDegree().GetSumDegree());
+        EXPECT_EQ((x / y).GetDegree().GetSumDegree(), x.GetDegree().GetSumDegree() - y.GetDegree().GetSumDegree());
+        EXPECT_EQ((x /= y).GetDegree().GetSumDegree(), 1);
+        EXPECT_EQ(x.GetDegree().GetSumDegree(), 1);
     }
 }

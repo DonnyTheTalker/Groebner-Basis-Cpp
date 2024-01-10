@@ -139,6 +139,7 @@ Monomial<Field> Monomial<Field>::operator-(const Monomial<Field> &other) {
 
 template<IsField Field>
 Monomial<Field> Monomial<Field>::operator*(const Monomial<Field> &other) {
+    assert(GetSize() == other.GetSize() && "Can't multiply monomials with different degrees");
     Monomial<Field> temp(*this);
     return temp *= other;
 }
@@ -146,6 +147,7 @@ Monomial<Field> Monomial<Field>::operator*(const Monomial<Field> &other) {
 template<IsField Field>
 Monomial<Field> Monomial<Field>::operator/(const Monomial<Field> &other) {
     // TODO add assert lhs.degree >= rhs.degree at every index
+    assert(GetSize() == other.GetSize() && "Can't divide monomials with different degrees");
     Monomial<Field> temp(*this);
     return temp /= other;
 }
