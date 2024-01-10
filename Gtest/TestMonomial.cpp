@@ -567,3 +567,12 @@ TEST(MonomialArithmetics, SumDegree) {
         EXPECT_EQ(x.GetDegree().GetSumDegree(), 1);
     }
 }
+
+TEST(MonomialArithmetics, UnaryMinus) {
+    {
+        Monomial x(Rational(3, 2), MonomialDegree(2, {1, 1}));
+        EXPECT_EQ(-x, Monomial(Rational(-3, 2), MonomialDegree(2, {1, 1})));
+        EXPECT_EQ((-x).GetCoef(), Rational(-3, 2));
+        EXPECT_EQ(-(-x), x);
+    }
+}

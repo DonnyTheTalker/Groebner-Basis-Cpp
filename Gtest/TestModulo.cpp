@@ -148,3 +148,22 @@ TEST(ModuloArithmetics, General) {
     EXPECT_EQ(x / z + y / z, Modulo(13, 2));
     EXPECT_EQ(x + x, x * z - x);
 }
+
+TEST(ModuloArithmetics, UnaryMinus) {
+    {
+        Modulo x(7, 1);
+        EXPECT_EQ(-x, Modulo(7, 6));
+    }
+
+    {
+        Modulo x(7, -1);
+        EXPECT_EQ(-x, Modulo(7, 1));
+    }
+
+    {
+        Modulo x(7, 3);
+        EXPECT_EQ(-x, Modulo(7, -3));
+        EXPECT_EQ(-(-x), x);
+        EXPECT_EQ(-(-x), Modulo(7, 3));
+    }
+}

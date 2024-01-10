@@ -140,3 +140,10 @@ TEST(RationalArithmetics, General) {
 
     EXPECT_EQ(x + y / z, Rational(71, 10));
 }
+
+TEST(RationalArithmetics, UnaryMinus) {
+    Rational x(7, 2);
+    EXPECT_EQ(-x, Rational(-7, 2));
+    EXPECT_EQ(-(-x), Rational(7, 2));
+    EXPECT_EQ(-(-x), x);
+}
