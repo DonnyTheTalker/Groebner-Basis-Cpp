@@ -8,6 +8,7 @@ set(HEADER_FILES
         MonomialCompare.h
         MonomialDegree.h
         ComparatorFwd.h
+        Polynomial.h
 )
 
 set(SOURCE_FILES
@@ -16,6 +17,7 @@ set(SOURCE_FILES
         Monomial.cpp
         MonomialCompare.cpp
         MonomialDegree.cpp
+        Polynomial.cpp
 )
 
 add_library(src STATIC ${SOURCE_FILES} ${HEADER_FILES})
