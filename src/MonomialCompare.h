@@ -42,7 +42,7 @@ bool StraightOrder::IsLess(const Monomial<Field> &lhs, const Monomial<Field> &rh
 
 template<IsField Field>
 bool StraightOrder::IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
-    assert(lhs.GetSize() == rhs.GetDegree() && "Can't compare monomials with different set of variables");
+    assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
     return IsLess(rhs, lhs);
 }
 
@@ -59,7 +59,7 @@ bool StraightOrder::IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &r
         }
     }
 
-    return false;
+    return true;
 }
 
 template<IsField Field>
@@ -180,7 +180,7 @@ bool ReverseLexOrder::IsLess(const Monomial<Field> &lhs, const Monomial<Field> &
     for (MonomialDegree::SizeType i = 0; i < size; ++i) {
         if (lhs_degree[size - i - 1] < rhs_degree[size - i - 1]) {
             return false;
-        } else if (lhs_degree[i] > rhs_degree[i]) {
+        } else if (lhs_degree[size - i - 1] > rhs_degree[size - i - 1]) {
             return true;
         }
     }
@@ -205,7 +205,7 @@ bool ReverseLexOrder::IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<F
     for (MonomialDegree::SizeType i = 0; i < size; ++i) {
         if (lhs_degree[size - i - 1] < rhs_degree[size - i - 1]) {
             return false;
-        } else if (lhs_degree[i] > rhs_degree[i]) {
+        } else if (lhs_degree[size - i - 1] > rhs_degree[size - i - 1]) {
             return true;
         }
     }
