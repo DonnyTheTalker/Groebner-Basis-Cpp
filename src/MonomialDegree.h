@@ -24,8 +24,8 @@ public:
     MonomialDegree &operator+=(const MonomialDegree &other);
     MonomialDegree &operator-=(const MonomialDegree &other);
 
-    MonomialDegree operator+(const MonomialDegree &other);
-    MonomialDegree operator-(const MonomialDegree &other);
+    MonomialDegree operator+(const MonomialDegree &other) const;
+    MonomialDegree operator-(const MonomialDegree &other) const;
 
     bool operator==(const MonomialDegree &other) const;
 

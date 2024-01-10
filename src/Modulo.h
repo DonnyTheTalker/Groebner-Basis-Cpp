@@ -16,6 +16,7 @@ public:
 
 public:
     ValueType Value() const;
+    Modulo operator-() const;
     bool IsZero() const;
 
     Modulo &operator+=(const Modulo &other);

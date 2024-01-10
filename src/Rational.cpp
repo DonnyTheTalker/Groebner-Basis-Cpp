@@ -147,3 +147,7 @@ bool Rational::operator>=(const Rational &other) const {
     ValueType lcm = FindLcm(denominator_, other.denominator_);
     return numerator_ * (lcm / denominator_) >= other.numerator_ * (lcm / other.denominator_);
 }
+
+Rational Rational::operator-() const {
+    return Rational(-numerator_, denominator_);
+}

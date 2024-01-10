@@ -24,6 +24,7 @@ public:
     const MonomialDegree &GetDegree() const;
 
     bool IsZero() const;
+    Monomial<Field> operator-() const;
 
 public:
     Monomial<Field> &operator+=(const Monomial<Field> &other);
@@ -31,10 +32,10 @@ public:
     Monomial<Field> &operator*=(const Monomial<Field> &other);
     Monomial<Field> &operator/=(const Monomial<Field> &other);
 
-    Monomial<Field> operator+(const Monomial<Field> &other);
-    Monomial<Field> operator-(const Monomial<Field> &other);
-    Monomial<Field> operator*(const Monomial<Field> &other);
-    Monomial<Field> operator/(const Monomial<Field> &other);
+    Monomial<Field> operator+(const Monomial<Field> &other) const;
+    Monomial<Field> operator-(const Monomial<Field> &other) const;
+    Monomial<Field> operator*(const Monomial<Field> &other) const;
+    Monomial<Field> operator/(const Monomial<Field> &other) const;
 
     bool operator==(const Monomial<Field> &other) const;
 
@@ -42,6 +43,11 @@ private:
     Field coef_;
     MonomialDegree degree_;
 };
+
+template<IsField Field>
+Monomial<Field> Monomial<Field>::operator-() const {
+    return Monomial<Field>(-coef_, degree_);
+}
 
 template<IsField Field>
 Monomial<Field>::Monomial(Field coef, const MonomialDegree &degree) : coef_(coef), degree_(degree) {
@@ -124,28 +130,28 @@ Monomial<Field> &Monomial<Field>::operator/=(const Monomial<Field> &other) {
 }
 
 template<IsField Field>
-Monomial<Field> Monomial<Field>::operator+(const Monomial<Field> &other) {
+Monomial<Field> Monomial<Field>::operator+(const Monomial<Field> &other) const {
     assert(GetSize() == other.GetSize() && "Can't add monomials with different degrees");
     Monomial<Field> temp(*this);
     return temp += other;
 }
 
 template<IsField Field>
-Monomial<Field> Monomial<Field>::operator-(const Monomial<Field> &other) {
+Monomial<Field> Monomial<Field>::operator-(const Monomial<Field> &other) const {
     assert(GetSize() == other.GetSize() && "Can't substitute monomials with different degrees");
     Monomial<Field> temp(*this);
     return temp -= other;
 }
 
 template<IsField Field>
-Monomial<Field> Monomial<Field>::operator*(const Monomial<Field> &other) {
+Monomial<Field> Monomial<Field>::operator*(const Monomial<Field> &other) const {
     assert(GetSize() == other.GetSize() && "Can't multiply monomials with different degrees");
     Monomial<Field> temp(*this);
     return temp *= other;
 }
 
 template<IsField Field>
-Monomial<Field> Monomial<Field>::operator/(const Monomial<Field> &other) {
+Monomial<Field> Monomial<Field>::operator/(const Monomial<Field> &other) const {
     // TODO add assert lhs.degree >= rhs.degree at every index
     assert(GetSize() == other.GetSize() && "Can't divide monomials with different degrees");
     Monomial<Field> temp(*this);

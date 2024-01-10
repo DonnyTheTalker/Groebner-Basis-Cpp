@@ -72,13 +72,13 @@ MonomialDegree &MonomialDegree::operator-=(const MonomialDegree &other) {
     return *this;
 }
 
-MonomialDegree MonomialDegree::operator+(const MonomialDegree &other) {
+MonomialDegree MonomialDegree::operator+(const MonomialDegree &other) const {
     assert(n_variables_ == other.n_variables_ && "Number of variables must be equal");
     MonomialDegree temp(*this);
     return temp += other;
 }
 
-MonomialDegree MonomialDegree::operator-(const MonomialDegree &other) {
+MonomialDegree MonomialDegree::operator-(const MonomialDegree &other) const {
     assert(n_variables_ == other.n_variables_ && "Number of variables must be equal");
     MonomialDegree temp(*this);
     return temp -= other;

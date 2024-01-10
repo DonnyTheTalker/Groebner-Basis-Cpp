@@ -153,4 +153,8 @@ bool Modulo::operator>=(const Modulo &other) const {
     return order_ == other.order_ && value_ >= other.value_;
 }
 
+Modulo Modulo::operator-() const {
+    return Modulo(order_, -value_);
+}
+
 

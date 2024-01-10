@@ -15,6 +15,7 @@ public:
 public:
     ValueType Numerator() const;
     ValueType Denominator() const;
+    Rational operator-() const;
     bool IsZero() const;
 
     Rational &operator+=(const Rational &other);
