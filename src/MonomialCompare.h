@@ -84,7 +84,7 @@ bool StraightOrder::IsGreaterOrEqual(const Monomial<Field> &lhs, const Monomial<
     return IsLessOrEqual(rhs, lhs);
 }
 
-class LexOrder {
+class LexOrder : public StraightOrder {
 public:
     LexOrder() = delete;
 
@@ -94,9 +94,6 @@ public:
 
     template<IsField Field>
     static bool IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
-
-    template<IsField Field>
-    static bool IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
 
     template<IsField Field>
     static bool IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
@@ -131,12 +128,6 @@ bool LexOrder::IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rhs)
 }
 
 template<IsField Field>
-bool LexOrder::IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
-    assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
-    return StraightOrder::IsEqual(lhs, rhs);
-}
-
-template<IsField Field>
 bool LexOrder::IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
     assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
 
@@ -160,7 +151,7 @@ bool LexOrder::IsGreaterOrEqual(const Monomial<Field> &lhs, const Monomial<Field
     return IsLessOrEqual(rhs, lhs);
 }
 
-class ReverseLexOrder {
+class ReverseLexOrder : public StraightOrder {
 public:
     ReverseLexOrder() = delete;
 
@@ -170,9 +161,6 @@ public:
 
     template<IsField Field>
     static bool IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
-
-    template<IsField Field>
-    static bool IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
 
     template<IsField Field>
     static bool IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
@@ -207,12 +195,6 @@ bool ReverseLexOrder::IsGreater(const Monomial<Field> &lhs, const Monomial<Field
 }
 
 template<IsField Field>
-bool ReverseLexOrder::IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
-    assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
-    return StraightOrder::IsEqual(lhs, rhs);
-}
-
-template<IsField Field>
 bool ReverseLexOrder::IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
     assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
 
@@ -236,7 +218,7 @@ bool ReverseLexOrder::IsGreaterOrEqual(const Monomial<Field> &lhs, const Monomia
     return IsLessOrEqual(rhs, lhs);
 }
 
-class GrlexOrder {
+class GrlexOrder : public LexOrder {
 public:
     GrlexOrder() = delete;
 
@@ -246,9 +228,6 @@ public:
 
     template<IsField Field>
     static bool IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
-
-    template<IsField Field>
-    static bool IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
 
     template<IsField Field>
     static bool IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
@@ -284,12 +263,6 @@ bool GrlexOrder::IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rh
 }
 
 template<IsField Field>
-bool GrlexOrder::IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
-    assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
-    return StraightOrder::IsEqual(lhs, rhs);
-}
-
-template<IsField Field>
 bool GrlexOrder::IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
     assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
 
@@ -314,7 +287,7 @@ bool GrlexOrder::IsGreaterOrEqual(const Monomial<Field> &lhs, const Monomial<Fie
     return IsLessOrEqual(rhs, lhs);
 }
 
-class GrevlexOrder {
+class GrevlexOrder : public ReverseLexOrder {
 public:
     GrevlexOrder() = delete;
 
@@ -324,9 +297,6 @@ public:
 
     template<IsField Field>
     static bool IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
-
-    template<IsField Field>
-    static bool IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
 
     template<IsField Field>
     static bool IsLessOrEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs);
@@ -358,12 +328,6 @@ template<IsField Field>
 bool GrevlexOrder::IsGreater(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
     assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
     return IsLess(rhs, lhs);
-}
-
-template<IsField Field>
-bool GrevlexOrder::IsEqual(const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
-    assert(lhs.GetSize() == rhs.GetSize() && "Can't compare monomials with different set of variables");
-    return StraightOrder::IsEqual(lhs, rhs);
 }
 
 template<IsField Field>

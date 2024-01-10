@@ -7,6 +7,7 @@ set(HEADER_FILES
         Monomial.h
         MonomialCompare.h
         MonomialDegree.h
+        ComparatorFwd.h
 )
 
 set(SOURCE_FILES

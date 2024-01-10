@@ -1,8 +1,8 @@
-//
-// Created by maxim on 10.01.24.
-//
+#pragma once
 
-#ifndef GR_COMPARATORFWD_H
-#define GR_COMPARATORFWD_H
+#include "MonomialCompare.h"
 
-#endif //GR_COMPARATORFWD_H
+#include <type_traits>
+
+template <typename T>
+concept IsComparator = std::is_base_of_v<StraightOrder, T>;
