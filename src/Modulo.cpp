@@ -58,11 +58,11 @@ Modulo &Modulo::operator=(Modulo &&other) noexcept {
     return *this;
 }
 
-Modulo::ValueType Modulo::Value() {
+Modulo::ValueType Modulo::Value() const {
     return value_;
 }
 
-bool Modulo::IsZero() {
+bool Modulo::IsZero() const {
     return value_ == 0;
 }
 

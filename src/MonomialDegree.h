@@ -8,7 +8,7 @@ public:
 public:
     MonomialDegree() = delete;
 
-    explicit MonomialDegree(SizeType n_variables);
+    explicit MonomialDegree(SizeType n_variables = 0);
     MonomialDegree(SizeType n_variables, const std::vector<DegreeType>& degrees);
     MonomialDegree(const MonomialDegree &other) = default;
     MonomialDegree(MonomialDegree &&other) noexcept ;
@@ -18,7 +18,6 @@ public:
 public:
     SizeType GetSize() const;
 
-    DegreeType operator[](size_t ind);
     DegreeType operator[](size_t ind) const;
 
     MonomialDegree &operator+=(const MonomialDegree &other);

@@ -15,8 +15,8 @@ public:
     Modulo &operator=(Modulo &&other) noexcept;
 
 public:
-    ValueType Value();
-    bool IsZero();
+    ValueType Value() const;
+    bool IsZero() const;
 
     Modulo &operator+=(const Modulo &other);
     Modulo &operator-=(const Modulo &other);

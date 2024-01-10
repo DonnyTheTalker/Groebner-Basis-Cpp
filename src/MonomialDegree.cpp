@@ -5,7 +5,6 @@
 
 MonomialDegree::MonomialDegree(MonomialDegree::SizeType n_variables) : n_variables_(n_variables),
                                                                        degrees_(n_variables, 0) {
-
 }
 
 MonomialDegree::MonomialDegree(MonomialDegree::SizeType n_variables, const std::vector<DegreeType> &degrees) :
@@ -36,11 +35,6 @@ MonomialDegree &MonomialDegree::operator=(MonomialDegree &&other) noexcept {
 
 MonomialDegree::SizeType MonomialDegree::GetSize() const {
     return n_variables_;
-}
-
-MonomialDegree::DegreeType MonomialDegree::operator[](size_t ind) {
-    assert(ind < n_variables_ && "Out of bounds");
-    return degrees_[ind];
 }
 
 MonomialDegree::DegreeType MonomialDegree::operator[](size_t ind) const {

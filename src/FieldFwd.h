@@ -1,8 +1,9 @@
-//
-// Created by maxim on 10.01.24.
-//
+#pragma once
 
-#ifndef GR_FIELDFWD_H
-#define GR_FIELDFWD_H
+#include "Modulo.h"
+#include "Rational.h"
 
-#endif //GR_FIELDFWD_H
+#include <type_traits>
+
+template<typename T>
+concept IsField = std::is_same_v<T, Modulo> || std::is_same_v<T, Rational>;

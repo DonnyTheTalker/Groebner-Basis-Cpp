@@ -20,7 +20,7 @@ namespace {
 
 Rational::Rational(Rational::ValueType numerator, Rational::ValueType denominator) :
         numerator_(numerator), denominator_(denominator) {
-    assert(denominator_ != 0 && "Denominator must not be zero!");
+    assert(denominator_ != 0 && "Denominator must not be zero");
     Reduce();
 }
 
