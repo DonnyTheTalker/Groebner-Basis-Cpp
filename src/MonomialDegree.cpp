@@ -48,7 +48,12 @@ MonomialDegree::DegreeType MonomialDegree::GetSumDegree() const {
     return sum_degree_;
 }
 
-MonomialDegree::DegreeType MonomialDegree::operator[](size_t ind) const {
+MonomialDegree::DegreeType& MonomialDegree::operator[](size_t ind) {
+    assert(ind < n_variables_ && "Out of bounds");
+    return degrees_[ind];
+}
+
+const MonomialDegree::DegreeType& MonomialDegree::operator[](size_t ind) const {
     assert(ind < n_variables_ && "Out of bounds");
     return degrees_[ind];
 }

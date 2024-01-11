@@ -19,7 +19,8 @@ public:
     SizeType GetSize() const;
     DegreeType GetSumDegree() const;
 
-    DegreeType operator[](size_t ind) const;
+    DegreeType& operator[](size_t ind);
+    const DegreeType& operator[](size_t ind) const;
 
     MonomialDegree &operator+=(const MonomialDegree &other);
     MonomialDegree &operator-=(const MonomialDegree &other);
