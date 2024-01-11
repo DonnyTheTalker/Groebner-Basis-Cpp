@@ -93,6 +93,12 @@ bool MonomialDegree::operator==(const MonomialDegree &other) const {
     return n_variables_ == other.n_variables_ && degrees_ == other.degrees_;
 }
 
+// TODO remove this completely
+void MonomialDegree::SetSumDegree(MonomialDegree::DegreeType degree) {
+    assert(degree == std::accumulate(degrees_.begin(), degrees_.end(), static_cast<DegreeType>(0)) && "Be careful");
+    sum_degree_ = degree;
+}
+
 
 
 

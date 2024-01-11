@@ -18,6 +18,7 @@ public:
 public:
     SizeType GetSize() const;
     DegreeType GetSumDegree() const;
+    void SetSumDegree(DegreeType degree);
 
     DegreeType& operator[](size_t ind);
     const DegreeType& operator[](size_t ind) const;

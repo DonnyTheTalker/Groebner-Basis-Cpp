@@ -22,6 +22,7 @@ public:
     const Monomial<Field>& GetLeader() const;
     bool IsZero() const;
 
+    // TODO change name to smth less strange
     void ReduceCoef();
 
 public:

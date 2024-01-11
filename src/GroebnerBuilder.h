@@ -17,7 +17,7 @@ public:
     static PolySystem<Field, Comparator> ReduceBasis(const PolySystem<Field, Comparator> &basis);
 
     template<IsField Field, IsComparator Comparator = LexOrder>
-    static PolySystem<Field, Comparator> SPolynomial(const Polynomial<Field, Comparator> &lhs,
+    static Polynomial<Field, Comparator> SPolynomial(const Polynomial<Field, Comparator> &lhs,
                                                      const Polynomial<Field, Comparator> &rhs,
                                                      const Monomial<Field> &lcm);
 
@@ -63,20 +63,32 @@ Monomial<Field> GroebnerBuilder::FindLcm(const Monomial<Field> &lhs, const Monom
     const MonomialDegree &lhs_degree = lhs.GetDegree();
     const MonomialDegree &rhs_degree = rhs.GetDegree();
 
+    MonomialDegree::DegreeType sum_degree = 0;
     for (size_t i = 0; i < lhs.GetSize(); i++) {
         degree[i] = std::max(lhs_degree[i], rhs_degree[i]);
+        sum_degree += degree[i];
     }
 
+    // TODO change this
+    degree.SetSumDegree(sum_degree);
     return Monomial<Field>(coef, degree);
 }
 
 template<IsField Field, IsComparator Comparator>
-PolySystem<Field, Comparator>
+Polynomial<Field, Comparator>
 GroebnerBuilder::SPolynomial(const Polynomial<Field, Comparator> &lhs, const Polynomial<Field, Comparator> &rhs,
                              const Monomial<Field> &lcm) {
     // TODO add poly * monom method
-    return lhs * Polynomial<Field, Comparator>({lcm / lhs.GetLeader()}) -
-           rhs * Polynomial<Field, Comparator>({lcm / rhs.GetLeader()});
+//    Monomial<Field> left_mod = lcm / lhs.GetLeader();
+//    Polynomial<Field, Comparator> left_part = lhs * Polynomial<Field, Comparator>({left_mod});
+//
+//    Monomial<Field> right_mod = lcm / rhs.GetLeader();
+//    Polynomial<Field, Comparator> right_part = rhs * Polynomial<Field, Comparator>({right_mod});
+//
+//    left_part -= right_part;
+//    return left_part;
+    return (lhs * Polynomial<Field, Comparator>({lcm / lhs.GetLeader()})) -
+           (rhs * Polynomial<Field, Comparator>({lcm / rhs.GetLeader()}));
 }
 
 template<IsField Field, IsComparator Comparator>

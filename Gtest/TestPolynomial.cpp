@@ -137,8 +137,8 @@ TEST(PolynomialBasic, IsZero) {
 
     {
         std::vector<Monomial<Modulo>> x{Monomial(Modulo(3, 1), MonomialDegree(3, {1, 0, 0})),
-                                          Monomial(Modulo(3, 2), MonomialDegree(3, {1, 1, 0})),
-                                          Monomial(Modulo(3, 0), MonomialDegree(3, {1, 1, 1})),
+                                        Monomial(Modulo(3, 2), MonomialDegree(3, {1, 1, 0})),
+                                        Monomial(Modulo(3, 0), MonomialDegree(3, {1, 1, 1})),
         };
 
         {
@@ -147,6 +147,31 @@ TEST(PolynomialBasic, IsZero) {
             EXPECT_TRUE(poly.IsZero());
             EXPECT_DEATH(poly.GetLeader(), "Empty polynomial");
         }
+    }
+}
+
+// TODO change name to smth less strange
+TEST(Polynomial, ReduceCoef) {
+    {
+        Polynomial<Rational, LexOrder> x({Monomial(Rational(3), MonomialDegree(2, {2, 0})),
+                                          Monomial(Rational(1), MonomialDegree(2, {1, 1})),
+                                          Monomial(Rational(2), MonomialDegree(2, {0, 1}))});
+        Polynomial<Rational, LexOrder> expected({Monomial(Rational(1), MonomialDegree(2, {2, 0})),
+                                                 Monomial(Rational(1, 3), MonomialDegree(2, {1, 1})),
+                                                 Monomial(Rational(2, 3), MonomialDegree(2, {0, 1}))});
+        x.ReduceCoef();
+        EXPECT_EQ(x, expected);
+    }
+
+    {
+        Polynomial<Modulo, LexOrder> x({Monomial(Modulo(5, 3), MonomialDegree(2, {2, 0})),
+                                        Monomial(Modulo(5, 1), MonomialDegree(2, {1, 1})),
+                                        Monomial(Modulo(5, 2), MonomialDegree(2, {0, 1}))});
+        Polynomial<Modulo, LexOrder> expected({Monomial(Modulo(5, 1), MonomialDegree(2, {2, 0})),
+                                               Monomial(Modulo(5, 2), MonomialDegree(2, {1, 1})),
+                                               Monomial(Modulo(5, 4), MonomialDegree(2, {0, 1}))});
+        x.ReduceCoef();
+        EXPECT_EQ(x, expected);
     }
 }
 

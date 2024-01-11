@@ -8,6 +8,6 @@ include_directories(${gtest_SOURCE_DIR}/include ${gtest_SOURCE_DIR})
 # 'Google_Tests_run' is the target name
 # 'test1.cpp test2.cpp' are source files with tests
 add_executable(Gtest_run TestRational.cpp TestModulo.cpp TestMonomialDegree.cpp TestMonomial.cpp TestMonomialCompare.cpp
-        TestPolynomial.cpp)
+        TestPolynomial.cpp TestGroebnerBuild.cpp TestPolySystem.cpp)
 target_link_libraries(Gtest_run src)
 target_link_libraries(Gtest_run gtest gtest_main)
