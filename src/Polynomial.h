@@ -38,6 +38,7 @@ private:
     void SortMonomials();
 
 private:
+    // TODO create type with using for std::vector
     // assuming Monomials have different degrees (3x + 5x -> 8x)
     // no monomials with coefficient 0
     std::vector<Monomial<Field>> monomials_ = {};
