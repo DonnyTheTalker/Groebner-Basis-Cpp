@@ -22,6 +22,8 @@ public:
     const Monomial<Field>& GetLeader() const;
     bool IsZero() const;
 
+    void ReduceCoef();
+
 public:
     Polynomial<Field, Comparator> &operator+=(const Polynomial<Field, Comparator> &other);
     Polynomial<Field, Comparator> &operator-=(const Polynomial<Field, Comparator> &other);
@@ -43,6 +45,14 @@ private:
     // no monomials with coefficient 0
     std::vector<Monomial<Field>> monomials_ = {};
 };
+
+template<IsField Field, IsComparator Comparator>
+void Polynomial<Field, Comparator>::ReduceCoef() {
+    const Field coef = GetLeader().GetCoef();
+    for (size_t i = 0; i < monomials_.size(); i++) {
+        monomials_[i].GetCoef() /= coef;
+    }
+}
 
 template<IsField Field, IsComparator Comparator>
 bool Polynomial<Field, Comparator>::IsZero() const {

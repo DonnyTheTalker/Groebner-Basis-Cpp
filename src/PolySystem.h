@@ -24,9 +24,27 @@ public:
     void Add(const Polynomial<Field, Comparator> &other);
     void Add(Polynomial<Field, Comparator> &&other);
 
+    // TODO move in private and give access wia friend
+    void SwapAndPop(size_t index);
+    void AddAndSwap(size_t index, const Polynomial<Field, Comparator> &polynomial);
+
 private:
     std::vector<Polynomial<Field, Comparator>> polynomials_;
 };
+
+template<IsField Field, IsComparator Comparator>
+void PolySystem<Field, Comparator>::AddAndSwap(size_t index, const Polynomial<Field, Comparator> &polynomial) {
+    assert(index <= polynomials_.size() && "Out of bounds");
+    polynomials_.push_back(polynomial);
+    std::swap(polynomials_[index], polynomials_.back());
+}
+
+template<IsField Field, IsComparator Comparator>
+void PolySystem<Field, Comparator>::SwapAndPop(size_t index) {
+    assert(index < polynomials_.size() && "Out of bounds");
+    std::swap(polynomials_[index], polynomials_.back());
+    polynomials_.pop_back();
+}
 
 template<IsField Field, IsComparator Comparator>
 Polynomial<Field, Comparator> &PolySystem<Field, Comparator>::operator[](size_t index) {

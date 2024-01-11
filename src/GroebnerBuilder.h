@@ -107,10 +107,7 @@ Polynomial<Field, Comparator> GroebnerBuilder::ReducePolynomial(Polynomial<Field
 
 template<IsField Field, IsComparator Comparator>
 PolySystem<Field, Comparator> GroebnerBuilder::ReduceBasis(const PolySystem<Field, Comparator> &basis) {
-    // TODO add reduction - find a way to get rid of i-th polynomial in system fast
-    // TODO swap(i, last), pop_back(), push_back(), swap again, but we need another poly_system
     // TODO add method poly /= coef
-    assert(false);
     PolySystem<Field, Comparator> temp;
     PolySystem<Field, Comparator> result;
     for (size_t i = 0; i < basis.GetSize(); i++) {
@@ -129,7 +126,15 @@ PolySystem<Field, Comparator> GroebnerBuilder::ReduceBasis(const PolySystem<Fiel
     }
 
     for (size_t i = 0; i < temp.GetSize(); i++) {
-        const Monomial<Field> cur = temp[i];
-//        result.Add(ReducePolynomial(result[i], )
+        const Polynomial<Field, Comparator> cur = temp.SwapAndPop(i);
+        result.Add(ReducePolynomial(cur, temp));
+        temp.AddAndSwap(cur);
     }
+
+    for (size_t i = 0; i < result.GetSize(); i++) {
+        // TODO add poly /= coeff
+        result[i].ReduceCoef();
+    }
+
+    return result;
 }

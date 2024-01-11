@@ -17,7 +17,8 @@ public:
     Monomial<Field> &operator=(Monomial<Field> &&other) noexcept;
 
 public:
-    Field GetCoef() const;
+    const Field& GetCoef() const;
+    Field& GetCoef();
     MonomialDegree::SizeType GetSize() const;
 
     MonomialDegree &GetDegree();
@@ -43,6 +44,11 @@ private:
     Field coef_;
     MonomialDegree degree_;
 };
+
+template<IsField Field>
+Field &Monomial<Field>::GetCoef() {
+    return coef_;
+}
 
 template<IsField Field>
 Monomial<Field> Monomial<Field>::operator-() const {
@@ -73,7 +79,7 @@ Monomial<Field> &Monomial<Field>::operator=(Monomial<Field> &&other) noexcept {
 }
 
 template<IsField Field>
-Field Monomial<Field>::GetCoef() const {
+const Field& Monomial<Field>::GetCoef() const {
     return coef_;
 }
 
