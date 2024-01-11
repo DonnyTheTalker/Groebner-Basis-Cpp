@@ -72,7 +72,85 @@ TEST(PolynomialBasic, Sorting) {
     }
 }
 
-// TODO add tests with Zp
+TEST(PolynomialBasic, Leading) {
+    {
+        std::vector<Monomial<Rational>> x{Monomial(Rational(1), MonomialDegree(3, {1, 0, 0})),
+                                          Monomial(Rational(2), MonomialDegree(3, {1, 1, 0})),
+                                          Monomial(Rational(2), MonomialDegree(3, {1, 1, 1})),
+        };
+
+        {
+            Polynomial<Rational, LexOrder> poly(x);
+            EXPECT_EQ(poly.GetLeader(), x[2]);
+        }
+
+        {
+            Polynomial<Rational, ReverseLexOrder> poly(x);
+            EXPECT_EQ(poly.GetLeader(), x[0]);
+        }
+
+        {
+            Polynomial<Rational, GrlexOrder> poly(x);
+            EXPECT_EQ(poly.GetLeader(), x[2]);
+        }
+
+        {
+            Polynomial<Rational, GrevlexOrder> poly(x);
+            EXPECT_EQ(poly.GetLeader(), x[2]);
+        }
+    }
+
+    {
+        std::vector<Monomial<Rational>> x{Monomial(Rational(1), MonomialDegree(3, {2, 0, 0})),
+                                          Monomial(Rational(2), MonomialDegree(3, {1, 1, 0})),
+                                          Monomial(Rational(2), MonomialDegree(3, {1, 0, 1})),
+                                          Monomial(Rational(2), MonomialDegree(3, {0, 2, 0})),
+                                          Monomial(Rational(2), MonomialDegree(3, {0, 1, 1})),
+                                          Monomial(Rational(2), MonomialDegree(3, {0, 0, 2}))};
+
+        {
+            Polynomial<Rational, GrlexOrder> poly(x);
+            EXPECT_EQ(poly.GetLeader(), x[0]);
+        }
+
+        {
+            Polynomial<Rational, GrevlexOrder> poly(x);
+            EXPECT_EQ(poly.GetLeader(), x[0]);
+        }
+    }
+}
+
+TEST(PolynomialBasic, IsZero) {
+    {
+        std::vector<Monomial<Rational>> x{Monomial(Rational(1), MonomialDegree(3, {1, 0, 0})),
+                                          Monomial(Rational(2), MonomialDegree(3, {1, 1, 0})),
+                                          Monomial(Rational(2, 3), MonomialDegree(3, {1, 1, 1})),
+        };
+
+        {
+            Polynomial poly(x);
+            poly -= poly;
+            EXPECT_TRUE(poly.IsZero());
+            EXPECT_DEATH(poly.GetLeader(), "Empty polynomial");
+        }
+    }
+
+    {
+        std::vector<Monomial<Modulo>> x{Monomial(Modulo(3, 1), MonomialDegree(3, {1, 0, 0})),
+                                          Monomial(Modulo(3, 2), MonomialDegree(3, {1, 1, 0})),
+                                          Monomial(Modulo(3, 0), MonomialDegree(3, {1, 1, 1})),
+        };
+
+        {
+            Polynomial poly(x);
+            poly = poly + poly + poly;
+            EXPECT_TRUE(poly.IsZero());
+            EXPECT_DEATH(poly.GetLeader(), "Empty polynomial");
+        }
+    }
+}
+
+// TODO add tests with Zp field
 TEST(PolynomialArithmetics, Addition) {
     {
         std::vector<Monomial<Rational>> x{Monomial(Rational(1), MonomialDegree(2, {2, 0})),
