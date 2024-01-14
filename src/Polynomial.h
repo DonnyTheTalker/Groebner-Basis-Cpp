@@ -18,6 +18,7 @@ public:
     Polynomial &operator=(Polynomial &&other) = default;
 
 public:
+    // TODO add method get size
     const std::vector<Monomial<Field>> &GetMonomials() const;
     const Monomial<Field>& GetLeader() const;
     bool IsZero() const;

@@ -14,31 +14,23 @@ public:
     PolySystem() = default;
 
     PolySystem(const PolySystem<Field, Comparator> &other) = default;
-
     PolySystem &operator=(const PolySystem<Field, Comparator> &other) = default;
-
     PolySystem(PolySystem<Field, Comparator> &&other) noexcept = default;
-
     PolySystem &operator=(PolySystem<Field, Comparator> &&other) noexcept = default;
-
     explicit PolySystem(const std::vector<Polynomial<Field, Comparator>> &polys);
 
 public:
-    size_t GetSize();
-
+    size_t GetSize() const;
     bool IsEmpty() const;
 
     const Polynomial<Field, Comparator> &operator[](size_t index) const;
-
     Polynomial<Field, Comparator> &operator[](size_t index);
 
     void Add(const Polynomial<Field, Comparator> &other);
-
     void Add(Polynomial<Field, Comparator> &&other);
 
-    // TODO move in private and give access wia friend
-    void SwapAndPop(size_t index);
-
+    // TODO move in private and give access via friend
+    Polynomial<Field, Comparator> SwapAndPop(size_t index);
     void AddAndSwap(size_t index, const Polynomial<Field, Comparator> &polynomial);
 
     bool operator==(const PolySystem<Field, Comparator> &other) const;
@@ -66,10 +58,12 @@ void PolySystem<Field, Comparator>::AddAndSwap(size_t index, const Polynomial<Fi
 }
 
 template<IsField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::SwapAndPop(size_t index) {
+Polynomial<Field, Comparator> PolySystem<Field, Comparator>::SwapAndPop(size_t index) {
     assert(index < polynomials_.size() && "Out of bounds");
     std::swap(polynomials_[index], polynomials_.back());
+    Polynomial<Field, Comparator> result(std::move(polynomials_.back()));
     polynomials_.pop_back();
+    return result;
 }
 
 template<IsField Field, IsComparator Comparator>
@@ -84,7 +78,7 @@ bool PolySystem<Field, Comparator>::IsEmpty() const {
 }
 
 template<IsField Field, IsComparator Comparator>
-size_t PolySystem<Field, Comparator>::GetSize() {
+size_t PolySystem<Field, Comparator>::GetSize() const {
     return polynomials_.size();
 }
 

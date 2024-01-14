@@ -42,8 +42,9 @@ PolySystem<Field, Comparator> GroebnerBuilder::Build(const PolySystem<Field, Com
                 continue;
             }
 
-            const Polynomial<Field, Comparator> rem = ReducePolynomial(SPolynomial(result[i], result[j], lcm));
+            const Polynomial<Field, Comparator> rem = ReducePolynomial(SPolynomial(result[i], result[j], lcm), result);
             if (!rem.IsZero()) {
+                // TODO maybe reduce coefficient ?
                 result.Add(std::move(rem));
             }
         }
@@ -102,14 +103,14 @@ Polynomial<Field, Comparator> GroebnerBuilder::ReducePolynomial(Polynomial<Field
         for (size_t i = 0; i < system.GetSize(); ++i) {
             // TODO add IsDivisible method somewhere
             if (StraightOrder::IsGreaterOrEqual(poly.GetLeader(), system[i].GetLeader())) {
-                poly -= system[i] * (poly.GetLeader() / system[i].GetLeader());
+                poly -= system[i] * Polynomial<Field, Comparator>({poly.GetLeader() / system[i].GetLeader()});
                 divisible = true;
                 break;
             }
         }
 
         if (!divisible) {
-            rem += poly.GetLeader();
+            rem += Polynomial<Field, Comparator>({poly.GetLeader()});
             poly -= Polynomial<Field, Comparator>({poly.GetLeader()});
         }
     }
@@ -126,7 +127,8 @@ PolySystem<Field, Comparator> GroebnerBuilder::ReduceBasis(const PolySystem<Fiel
         bool can_throw_out = false;
         for (size_t j = 0; j < basis.GetSize(); j++) {
             // TODO add IsDivisible method somewhere
-            if (i != j && StraightOrder::IsGreaterOrEqual(basis[i].GetLeader(), basis[i].GetLeader())) {
+            if (i != j && ((i < j && StraightOrder::IsGreaterOrEqual(basis[i].GetLeader(), basis[j].GetLeader()) || (
+                    i > j && StraightOrder::IsGreater(basis[i].GetLeader(), basis[j].GetLeader()))))) {
                 can_throw_out = true;
                 break;
             }
@@ -140,7 +142,7 @@ PolySystem<Field, Comparator> GroebnerBuilder::ReduceBasis(const PolySystem<Fiel
     for (size_t i = 0; i < temp.GetSize(); i++) {
         const Polynomial<Field, Comparator> cur = temp.SwapAndPop(i);
         result.Add(ReducePolynomial(cur, temp));
-        temp.AddAndSwap(cur);
+        temp.AddAndSwap(i, cur);
     }
 
     for (size_t i = 0; i < result.GetSize(); i++) {
