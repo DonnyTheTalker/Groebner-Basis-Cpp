@@ -1,6 +1,7 @@
-#include "gtest/gtest.h"
 #include "Rational.h"
+#include "gtest/gtest.h"
 
+namespace Groebner::GroebnerTest {
 TEST(RationalBasic, Construction) {
     EXPECT_NO_THROW(Rational());
     EXPECT_NO_THROW(Rational(1));
@@ -20,18 +21,18 @@ TEST(RationalBasic, Reduction) {
 TEST(RationalBasic, Getters) {
     Rational x(13, 26);
     EXPECT_FALSE(x.IsZero());
-    EXPECT_EQ(x.Numerator(), 1);
-    EXPECT_EQ(x.Denominator(), 2);
+    EXPECT_EQ(x.GetNumerator(), 1);
+    EXPECT_EQ(x.GetDenominator(), 2);
 
     x = Rational(2, -1);
     EXPECT_FALSE(x.IsZero());
-    EXPECT_EQ(x.Numerator(), -2);
-    EXPECT_EQ(x.Denominator(), 1);
+    EXPECT_EQ(x.GetNumerator(), -2);
+    EXPECT_EQ(x.GetDenominator(), 1);
 
     x = Rational(0);
     EXPECT_TRUE(x.IsZero());
-    EXPECT_EQ(x.Numerator(), 0);
-    EXPECT_EQ(x.Denominator(), 1);
+    EXPECT_EQ(x.GetNumerator(), 0);
+    EXPECT_EQ(x.GetDenominator(), 1);
 }
 
 TEST(RationalBasic, Comparison) {
@@ -147,3 +148,4 @@ TEST(RationalArithmetics, UnaryMinus) {
     EXPECT_EQ(-(-x), Rational(7, 2));
     EXPECT_EQ(-(-x), x);
 }
+}  // namespace Groebner::GroebnerTest
