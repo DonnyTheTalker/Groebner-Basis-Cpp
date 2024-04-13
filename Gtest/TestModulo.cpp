@@ -1,7 +1,7 @@
 #include "Modulo.h"
 #include "gtest/gtest.h"
 
-namespace Groebner::GroebnerTest {
+namespace Groebner::Test {
 TEST(ModuloBasic, Construction) {
     EXPECT_NO_THROW(Modulo<2>(0));
     EXPECT_NO_THROW(Modulo<2>());

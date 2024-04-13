@@ -1,7 +1,7 @@
 #include "Rational.h"
 #include "gtest/gtest.h"
 
-namespace Groebner::GroebnerTest {
+namespace Groebner::Test {
 TEST(RationalBasic, Construction) {
     EXPECT_NO_THROW(Rational());
     EXPECT_NO_THROW(Rational(1));
