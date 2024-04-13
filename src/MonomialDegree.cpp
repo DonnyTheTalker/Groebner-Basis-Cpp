@@ -1,107 +1,108 @@
 #include "MonomialDegree.h"
 
 #include <cassert>
-#include <numeric>
 #include <utility>
 
-MonomialDegree::MonomialDegree(MonomialDegree::SizeType n_variables) : n_variables_(n_variables),
-                                                                       degrees_(n_variables, 0),
-                                                                       sum_degree_(0) {
+namespace Groebner {
+
+MonomialDegree::MonomialDegree(size_t size) : degrees_(size) {
 }
 
-MonomialDegree::MonomialDegree(MonomialDegree::SizeType n_variables, const std::vector<DegreeType> &degrees) :
-        n_variables_(n_variables), sum_degree_(std::accumulate(degrees.begin(), degrees.end(),
-                                                               static_cast<DegreeType>(0))), degrees_(degrees) {
+MonomialDegree::MonomialDegree(std::vector<DegreeType>&& degrees)
+    : degrees_(std::move(degrees)) {
+    sum_degree_ = std::accumulate(degrees_.begin(), degrees_.end(), 0ULL);
 }
 
-MonomialDegree::MonomialDegree(MonomialDegree &&other) noexcept: n_variables_(other.n_variables_),
-                                                                 sum_degree_(std::exchange(other.sum_degree_, 0)),
-                                                                 degrees_(std::move(other.degrees_)) {
-    other.degrees_.clear();
-    other.degrees_.resize(n_variables_);
-
+MonomialDegree::MonomialDegree(std::initializer_list<DegreeType> degrees) {
+    degrees_.insert(degrees_.end(), degrees.begin(), degrees.end());
+    sum_degree_ = std::accumulate(degrees_.begin(), degrees_.end(), 0ULL);
 }
 
-MonomialDegree &MonomialDegree::operator=(const MonomialDegree &other) {
-    assert(n_variables_ == other.n_variables_ && "Number of variables must be equal in '='");
-    sum_degree_ = other.sum_degree_;
-    degrees_ = other.degrees_;
-    return *this;
-}
-
-MonomialDegree &MonomialDegree::operator=(MonomialDegree &&other) noexcept {
-    assert(n_variables_ == other.n_variables_ && "Number of variables must");
-    if (this != &other) {
-        sum_degree_ = std::exchange(other.sum_degree_, 0);
-        degrees_ = std::move(other.degrees_);
-        other.degrees_.clear();
-        other.degrees_.resize(n_variables_);
-    }
-    return *this;
-}
-
-MonomialDegree::SizeType MonomialDegree::GetSize() const {
-    return n_variables_;
+size_t MonomialDegree::GetSize() const {
+    return degrees_.size();
 }
 
 MonomialDegree::DegreeType MonomialDegree::GetSumDegree() const {
     return sum_degree_;
 }
 
-MonomialDegree::DegreeType& MonomialDegree::operator[](size_t ind) {
-    assert(ind < n_variables_ && "Out of bounds");
-    return degrees_[ind];
-}
-
-const MonomialDegree::DegreeType& MonomialDegree::operator[](size_t ind) const {
-    assert(ind < n_variables_ && "Out of bounds");
-    return degrees_[ind];
-}
-
-MonomialDegree &MonomialDegree::operator+=(const MonomialDegree &other) {
-    assert(n_variables_ == other.n_variables_ && "Number of variables must be equal");
-    for (SizeType i = 0; i < n_variables_; ++i) {
-        degrees_[i] += other.degrees_[i];
-        sum_degree_ += other.degrees_[i];
+MonomialDegree::DegreeType MonomialDegree::GetDegree(size_t ind) const {
+    if (ind < GetSize()) {
+        return degrees_[ind];
     }
+    return 0;
+}
+
+void MonomialDegree::SetDegree(size_t ind, MonomialDegree::DegreeType val) {
+    if (ind < GetSize()) {
+        sum_degree_ -= degrees_[ind];
+    } else {
+        Expand(ind + 1);
+    }
+
+    sum_degree_ += val;
+    degrees_[ind] = val;
+}
+
+MonomialDegree& MonomialDegree::operator+=(const MonomialDegree& other) {
+    if (GetSize() < other.GetSize()) {
+        Expand(other.GetSize());
+    }
+
+    for (size_t i = 0; i < other.GetSize(); i++) {
+        SetDegree(i, GetDegree(i) + other.GetDegree(i));
+    }
+
     return *this;
 }
 
-MonomialDegree &MonomialDegree::operator-=(const MonomialDegree &other) {
-    assert(n_variables_ == other.n_variables_ && "Number of variables must be equal");
-    for (SizeType i = 0; i < n_variables_; ++i) {
-        assert(degrees_[i] >= other.degrees_[i] && "Can't substitute from lower degree");
-        degrees_[i] -= other.degrees_[i];
-        sum_degree_ -= other.degrees_[i];
+MonomialDegree& MonomialDegree::operator-=(const MonomialDegree& other) {
+    if (GetSize() < other.GetSize()) {
+        Expand(other.GetSize());
     }
+
+    for (size_t i = 0; i < other.GetSize(); i++) {
+        // TODO add comparison
+        assert(GetDegree(i) >= other.GetDegree(i) && "Can't substitute from lower degree");
+        SetDegree(i, GetDegree(i) - other.GetDegree(i));
+    }
+
     return *this;
 }
 
-MonomialDegree MonomialDegree::operator+(const MonomialDegree &other) const {
-    assert(n_variables_ == other.n_variables_ && "Number of variables must be equal");
+MonomialDegree MonomialDegree::operator+(const MonomialDegree& other) const {
     MonomialDegree temp(*this);
-    return temp += other;
+    temp += other;
+    return temp;
 }
 
-MonomialDegree MonomialDegree::operator-(const MonomialDegree &other) const {
-    assert(n_variables_ == other.n_variables_ && "Number of variables must be equal");
+MonomialDegree MonomialDegree::operator-(const MonomialDegree& other) const {
     MonomialDegree temp(*this);
-    return temp -= other;
+    temp -= other;
+    return temp;
 }
 
-bool MonomialDegree::operator==(const MonomialDegree &other) const {
-    return n_variables_ == other.n_variables_ && degrees_ == other.degrees_;
+bool MonomialDegree::operator==(const MonomialDegree& other) const {
+    auto lhs_size = GetSize();
+    auto rhs_size = other.GetSize();
+
+    for (size_t i = 0; i < std::max(lhs_size, rhs_size); i++) {
+        DegreeType lhs_degree = (i < lhs_size) ? GetDegree(i) : 0;
+        DegreeType rhs_degree = (i < rhs_size) ? other.GetDegree(i) : 0;
+        if (lhs_degree != rhs_degree) {
+            return false;
+        }
+    }
+
+    return true;
 }
 
-// TODO remove this completely
-void MonomialDegree::SetSumDegree(MonomialDegree::DegreeType degree) {
-    assert(degree == std::accumulate(degrees_.begin(), degrees_.end(), static_cast<DegreeType>(0)) && "Be careful");
-    sum_degree_ = degree;
+bool MonomialDegree::operator!=(const MonomialDegree& other) const {
+    return !(*this == other);
 }
 
-
-
-
-
-
-
+void MonomialDegree::Expand(size_t new_size) {
+    assert(new_size >= GetSize() && "Trying to expand to lower size");
+    degrees_.resize(new_size);
+}
+}  // namespace Groebner
