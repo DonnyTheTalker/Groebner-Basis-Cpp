@@ -15,7 +15,6 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         Rational.cpp
-        Modulo.cpp
         Monomial.cpp
         MonomialCompare.cpp
         MonomialDegree.cpp
