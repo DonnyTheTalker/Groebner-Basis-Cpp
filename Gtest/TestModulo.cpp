@@ -9,12 +9,6 @@ TEST(ModuloBasic, Construction) {
     EXPECT_NO_THROW(Modulo<7>(10));
     EXPECT_NO_THROW(Modulo<100049>(20));
     EXPECT_NO_THROW(Modulo<3>(-1));
-
-    EXPECT_DEATH(Modulo<0>(), "Modulus must be prime number");
-    EXPECT_DEATH(Modulo<1>(), "Modulus must be prime number");
-    EXPECT_DEATH(Modulo<4>(), "Modulus must be prime number");
-    EXPECT_DEATH(Modulo<8>(), "Modulus must be prime number");
-    EXPECT_DEATH(Modulo<100000>(), "Modulus must be prime number");
 }
 
 TEST(ModuloBasic, Normalization) {

@@ -41,14 +41,15 @@ namespace GroebnerDetails {
     }
 }  // namespace GroebnerDetails
 
+template <int64_t N>
+concept IsPrime = GroebnerDetails::IsPrime(N);
+
 template <int64_t Modulus>
-class Modulo {
+requires IsPrime<Modulus> class Modulo {
     public:
         using ValueType = GroebnerDetails::ModuloValueType;
 
         explicit Modulo(ValueType value = 0) : value_(value) {
-            assert(GroebnerDetails::IsPrime(Modulus) &&
-                   "Modulus must be prime number");
             Normalize();
         }
 
@@ -116,9 +117,7 @@ class Modulo {
             return value_ == other.value_;
         }
 
-        bool operator!=(const Modulo& other) const {
-            return !(*this == other);
-        }
+        bool operator!=(const Modulo& other) const { return !(*this == other); }
 
         bool operator<(const Modulo& other) const {
             return value_ < other.value_;
@@ -128,9 +127,7 @@ class Modulo {
             return (*this < other) || (*this == other);
         }
 
-        bool operator>(const Modulo& other) const {
-            return !(*this <= other);
-        }
+        bool operator>(const Modulo& other) const { return !(*this <= other); }
 
         bool operator>=(const Modulo& other) const {
             return (*this > other) || (*this == other);
