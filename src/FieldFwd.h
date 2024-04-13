@@ -6,7 +6,7 @@
 #include <type_traits>
 
 namespace Groebner {
-    namespace GroebnerDetails {
+    namespace Details {
         template <typename T>
         constexpr inline bool IsSupportedFieldV = std::is_same_v<T, Rational>;
 
@@ -15,5 +15,5 @@ namespace Groebner {
     }
 
     template <typename T>
-    concept IsSupportedField = GroebnerDetails::IsSupportedFieldV<T>;
+    concept IsSupportedField = Details::IsSupportedFieldV<T>;
 }

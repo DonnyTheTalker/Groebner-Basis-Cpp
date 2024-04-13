@@ -38,7 +38,6 @@ class Rational {
     private:
         void Reduce();
 
-    private:
         // considering denominator > 0
         // and gcd(numerator, denominator) = 1
         // zero is represented as 0 / 1

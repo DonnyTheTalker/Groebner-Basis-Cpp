@@ -114,11 +114,11 @@ bool Rational::operator<=(const Rational& other) const {
 }
 
 bool Rational::operator>(const Rational& other) const {
-    return !(*this <= other);
+    return other < *this;
 }
 
 bool Rational::operator>=(const Rational& other) const {
-    return (*this > other) || (*this == other);
+    return other <= *this;
 }
 
 void Rational::Reduce() {

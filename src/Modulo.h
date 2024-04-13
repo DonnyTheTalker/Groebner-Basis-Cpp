@@ -5,7 +5,7 @@
 #include <cstdlib>
 
 namespace Groebner {
-namespace GroebnerDetails {
+namespace Details {
     constexpr bool IsPrime(int64_t n) {
         if (n <= 1 || (n > 2 && n % 2 == 0)) {
             return false;
@@ -39,15 +39,15 @@ namespace GroebnerDetails {
         *coef_y = temp_x;
         return gcd;
     }
-}  // namespace GroebnerDetails
+}  // namespace Details
 
 template <int64_t N>
-concept IsPrime = GroebnerDetails::IsPrime(N);
+concept IsPrime = Details::IsPrime(N);
 
 template <int64_t Modulus>
 requires IsPrime<Modulus> class Modulo {
     public:
-        using ValueType = GroebnerDetails::ModuloValueType;
+        using ValueType = Details::ModuloValueType;
 
         explicit Modulo(ValueType value = 0) : value_(value) {
             Normalize();
@@ -127,10 +127,12 @@ requires IsPrime<Modulus> class Modulo {
             return (*this < other) || (*this == other);
         }
 
-        bool operator>(const Modulo& other) const { return !(*this <= other); }
+        bool operator>(const Modulo& other) const {
+            return other < *this;
+        }
 
         bool operator>=(const Modulo& other) const {
-            return (*this > other) || (*this == other);
+            return other <= *this;
         }
 
     private:
@@ -147,7 +149,7 @@ requires IsPrime<Modulus> class Modulo {
         void Inverse() {
             assert(value_ != 0 && "No inverse element for zero");
             ValueType x, y;
-            GroebnerDetails::FindGcdExtended(value_, Modulus, &x, &y);
+            Details::FindGcdExtended(value_, Modulus, &x, &y);
             value_ = x;
             Normalize();
         }
@@ -158,7 +160,6 @@ requires IsPrime<Modulus> class Modulo {
             return temp;
         }
 
-    private:
         // considering modulus_ to be positive and prime
         // 0 <= value_ < Modulus
         ValueType value_;
