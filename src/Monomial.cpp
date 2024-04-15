@@ -1,39 +1,39 @@
-#include "MonomialDegree.h"
+#include "Monomial.h"
 
 #include <cassert>
 #include <utility>
 
 namespace Groebner {
 
-MonomialDegree::MonomialDegree(size_t size) : degrees_(size) {
+Monomial::Monomial(size_t size) : degrees_(size) {
 }
 
-MonomialDegree::MonomialDegree(std::vector<DegreeType>&& degrees)
+Monomial::Monomial(std::vector<DegreeType>&& degrees)
     : degrees_(std::move(degrees)) {
     sum_degree_ = std::accumulate(degrees_.begin(), degrees_.end(), 0ULL);
 }
 
-MonomialDegree::MonomialDegree(std::initializer_list<DegreeType> degrees) {
+Monomial::Monomial(std::initializer_list<DegreeType> degrees) {
     degrees_.insert(degrees_.end(), degrees.begin(), degrees.end());
     sum_degree_ = std::accumulate(degrees_.begin(), degrees_.end(), 0ULL);
 }
 
-size_t MonomialDegree::GetSize() const {
+size_t Monomial::GetSize() const {
     return degrees_.size();
 }
 
-MonomialDegree::DegreeType MonomialDegree::GetSumDegree() const {
+Monomial::DegreeType Monomial::GetSumDegree() const {
     return sum_degree_;
 }
 
-MonomialDegree::DegreeType MonomialDegree::GetDegree(size_t ind) const {
+Monomial::DegreeType Monomial::GetDegree(size_t ind) const {
     if (ind < GetSize()) {
         return degrees_[ind];
     }
     return 0;
 }
 
-void MonomialDegree::SetDegree(size_t ind, MonomialDegree::DegreeType val) {
+void Monomial::SetDegree(size_t ind, Monomial::DegreeType val) {
     if (ind < GetSize()) {
         sum_degree_ -= degrees_[ind];
     } else {
@@ -44,7 +44,7 @@ void MonomialDegree::SetDegree(size_t ind, MonomialDegree::DegreeType val) {
     degrees_[ind] = val;
 }
 
-MonomialDegree& MonomialDegree::operator+=(const MonomialDegree& other) {
+Monomial& Monomial::operator+=(const Monomial& other) {
     if (GetSize() < other.GetSize()) {
         Expand(other.GetSize());
     }
@@ -56,7 +56,7 @@ MonomialDegree& MonomialDegree::operator+=(const MonomialDegree& other) {
     return *this;
 }
 
-MonomialDegree& MonomialDegree::operator-=(const MonomialDegree& other) {
+Monomial& Monomial::operator-=(const Monomial& other) {
     if (GetSize() < other.GetSize()) {
         Expand(other.GetSize());
     }
@@ -70,19 +70,19 @@ MonomialDegree& MonomialDegree::operator-=(const MonomialDegree& other) {
     return *this;
 }
 
-MonomialDegree MonomialDegree::operator+(const MonomialDegree& other) const {
-    MonomialDegree temp(*this);
+Monomial Monomial::operator+(const Monomial& other) const {
+    Monomial temp(*this);
     temp += other;
     return temp;
 }
 
-MonomialDegree MonomialDegree::operator-(const MonomialDegree& other) const {
-    MonomialDegree temp(*this);
+Monomial Monomial::operator-(const Monomial& other) const {
+    Monomial temp(*this);
     temp -= other;
     return temp;
 }
 
-bool MonomialDegree::operator==(const MonomialDegree& other) const {
+bool Monomial::operator==(const Monomial& other) const {
     auto lhs_size = GetSize();
     auto rhs_size = other.GetSize();
 
@@ -97,11 +97,11 @@ bool MonomialDegree::operator==(const MonomialDegree& other) const {
     return true;
 }
 
-bool MonomialDegree::operator!=(const MonomialDegree& other) const {
+bool Monomial::operator!=(const Monomial& other) const {
     return !(*this == other);
 }
 
-void MonomialDegree::Expand(size_t new_size) {
+void Monomial::Expand(size_t new_size) {
     assert(new_size >= GetSize() && "Trying to expand to lower size");
     degrees_.resize(new_size);
 }

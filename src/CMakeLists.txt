@@ -8,7 +8,7 @@ set(HEADER_FILES
         Modulo.h
         FieldFwd.h
         MonomialCompare.h
-        MonomialDegree.h
+        Monomial.h
         ComparatorFwd.h
         Polynomial.h
         PolySystem.h
@@ -17,7 +17,7 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         Rational.cpp
-        MonomialDegree.cpp
+        Monomial.cpp
         Polynomial.cpp
         PolySystem.cpp
         GroebnerBuilder.cpp

@@ -23,16 +23,16 @@ namespace Details {
     concept IsIterator = IsIteratorV<T>::value;
 }  // namespace Details
 
-class MonomialDegree {
+class Monomial {
     public:
         using DegreeType = uint64_t;
 
-        MonomialDegree(size_t size = 0);
-        explicit MonomialDegree(std::vector<DegreeType>&& degrees);
-        MonomialDegree(std::initializer_list<DegreeType> degrees);
+        Monomial(size_t size = 0);
+        explicit Monomial(std::vector<DegreeType>&& degrees);
+        Monomial(std::initializer_list<DegreeType> degrees);
 
         template <Details::IsIterator It>
-        MonomialDegree(It begin, It end) {
+        Monomial(It begin, It end) {
             degrees_.insert(degrees_.end(), begin, end);
             sum_degree_ =
                 std::accumulate(degrees_.begin(), degrees_.end(), 0ULL);
@@ -44,14 +44,14 @@ class MonomialDegree {
         DegreeType GetDegree(size_t ind) const;
         void SetDegree(size_t ind, DegreeType val);
 
-        MonomialDegree& operator+=(const MonomialDegree& other);
-        MonomialDegree& operator-=(const MonomialDegree& other);
+        Monomial& operator+=(const Monomial& other);
+        Monomial& operator-=(const Monomial& other);
 
-        MonomialDegree operator+(const MonomialDegree& other) const;
-        MonomialDegree operator-(const MonomialDegree& other) const;
+        Monomial operator+(const Monomial& other) const;
+        Monomial operator-(const Monomial& other) const;
 
-        bool operator==(const MonomialDegree& other) const;
-        bool operator!=(const MonomialDegree& other) const;
+        bool operator==(const Monomial& other) const;
+        bool operator!=(const Monomial& other) const;
 
     private:
         void Expand(size_t new_size);
