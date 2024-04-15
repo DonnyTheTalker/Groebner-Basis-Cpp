@@ -1,5 +1,6 @@
 #pragma once
 
+#include "ListFwd.h"
 #include "Modulo.h"
 #include "Rational.h"
 
@@ -7,8 +8,10 @@
 
 namespace Groebner {
     namespace Details {
+        using SupportedFields = List<Rational>;
+
         template <typename T>
-        constexpr inline bool IsSupportedFieldV = std::is_same_v<T, Rational>;
+        constexpr inline bool IsSupportedFieldV = IsInList<T, SupportedFields>;
 
         template <size_t N>
         constexpr inline bool IsSupportedFieldV<Modulo<N>> = IsPrime(N);

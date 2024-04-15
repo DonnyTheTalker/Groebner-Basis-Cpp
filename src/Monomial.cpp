@@ -1,4 +1,5 @@
 #include "Monomial.h"
+#include "MonomialCompare.h"
 
 #include <cassert>
 #include <utility>
@@ -57,13 +58,14 @@ Monomial& Monomial::operator+=(const Monomial& other) {
 }
 
 Monomial& Monomial::operator-=(const Monomial& other) {
+    assert(StraightCoordinateOrder::IsGreaterOrEqual(*this, other) &&
+           "Can't substitute from lower degree");
+
     if (GetSize() < other.GetSize()) {
         Expand(other.GetSize());
     }
 
     for (size_t i = 0; i < other.GetSize(); i++) {
-        // TODO add comparison
-        assert(GetDegree(i) >= other.GetDegree(i) && "Can't substitute from lower degree");
         SetDegree(i, GetDegree(i) - other.GetDegree(i));
     }
 
@@ -83,13 +85,8 @@ Monomial Monomial::operator-(const Monomial& other) const {
 }
 
 bool Monomial::operator==(const Monomial& other) const {
-    auto lhs_size = GetSize();
-    auto rhs_size = other.GetSize();
-
-    for (size_t i = 0; i < std::max(lhs_size, rhs_size); i++) {
-        DegreeType lhs_degree = (i < lhs_size) ? GetDegree(i) : 0;
-        DegreeType rhs_degree = (i < rhs_size) ? other.GetDegree(i) : 0;
-        if (lhs_degree != rhs_degree) {
+    for (size_t i = 0; i < std::max(GetSize(), other.GetSize()); i++) {
+        if (GetDegree(i) != other.GetDegree(i)) {
             return false;
         }
     }

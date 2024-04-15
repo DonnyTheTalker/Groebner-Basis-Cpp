@@ -1,8 +1,16 @@
 #pragma once
 
+#include "ListFwd.h"
 #include "MonomialCompare.h"
 
 #include <type_traits>
 
+namespace Groebner {
+namespace Details {
+    using Comparators =
+        List<LexOrder, ReverseLexOrder, GrlexOrder, GrevlexOrder>;
+}
+
 template <typename T>
-concept IsComparator = std::is_base_of_v<StraightOrder, T>;
+concept IsComparator = Details::IsInList<T, Details::Comparators>;
+}  // namespace Groebner

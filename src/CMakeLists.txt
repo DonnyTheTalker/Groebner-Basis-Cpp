@@ -13,6 +13,7 @@ set(HEADER_FILES
         Polynomial.h
         PolySystem.h
         GroebnerBuilder.h
+        ListFwd.h
 )
 
 set(SOURCE_FILES
@@ -21,6 +22,7 @@ set(SOURCE_FILES
         Polynomial.cpp
         PolySystem.cpp
         GroebnerBuilder.cpp
+        MonomialCompare.cpp
 )
 
 add_library(src STATIC ${SOURCE_FILES} ${HEADER_FILES})
