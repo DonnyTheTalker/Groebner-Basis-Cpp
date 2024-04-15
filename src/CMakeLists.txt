@@ -1,10 +1,12 @@
 project(Groebner)
 
+set(CMAKE_CXX_STANDARD 20)
+set(CMAKE_CXX_STANDARD_REQUIRED True)
+
 set(HEADER_FILES
         Rational.h
         Modulo.h
         FieldFwd.h
-        Monomial.h
         MonomialCompare.h
         MonomialDegree.h
         ComparatorFwd.h
@@ -15,8 +17,6 @@ set(HEADER_FILES
 
 set(SOURCE_FILES
         Rational.cpp
-        Monomial.cpp
-        MonomialCompare.cpp
         MonomialDegree.cpp
         Polynomial.cpp
         PolySystem.cpp
