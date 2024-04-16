@@ -19,7 +19,6 @@ set(HEADER_FILES
 set(SOURCE_FILES
         Rational.cpp
         Monomial.cpp
-        PolySystem.cpp
         GroebnerBuilder.cpp
         MonomialCompare.cpp
         Modulo.cpp

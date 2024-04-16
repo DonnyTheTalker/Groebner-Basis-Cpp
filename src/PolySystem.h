@@ -2,98 +2,118 @@
 
 #include "ComparatorFwd.h"
 #include "FieldFwd.h"
+#include "IteratorFwd.h"
 #include "Polynomial.h"
 
-// TODO add template for container type
-// to add smth like std::set, ordering by Leading monomial
-template<IsField Field, IsComparator Comparator>
+namespace Groebner {
+
+template <IsSupportedField Field, IsComparator Comparator>
 class PolySystem {
-public:
-    // TODO add constructors for other Comparator
-    // TODO add constructor from vector of polynomials
-    PolySystem() = default;
+    private:
+        using LocalPolynomial = Polynomial<Field, Comparator>;
 
-    PolySystem(const PolySystem<Field, Comparator> &other) = default;
-    PolySystem &operator=(const PolySystem<Field, Comparator> &other) = default;
-    PolySystem(PolySystem<Field, Comparator> &&other) noexcept = default;
-    PolySystem &operator=(PolySystem<Field, Comparator> &&other) noexcept = default;
-    explicit PolySystem(const std::vector<Polynomial<Field, Comparator>> &polys);
+    public:
+        PolySystem() = default;
 
-public:
-    size_t GetSize() const;
-    bool IsEmpty() const;
+        // TODO add constructors for other Comparator
+        explicit PolySystem(std::vector<LocalPolynomial>&& polys);
+        PolySystem(std::initializer_list<LocalPolynomial> polys);
+        template <Details::IsIterator It>
+        PolySystem(It begin, It end);
 
-    const Polynomial<Field, Comparator> &operator[](size_t index) const;
-    Polynomial<Field, Comparator> &operator[](size_t index);
+        size_t GetSize() const;
+        bool IsEmpty() const;
 
-    void Add(const Polynomial<Field, Comparator> &other);
-    void Add(Polynomial<Field, Comparator> &&other);
+        const LocalPolynomial& operator[](size_t index) const;
+        LocalPolynomial& operator[](size_t index);
 
-    // TODO move in private and give access via friend
-    Polynomial<Field, Comparator> SwapAndPop(size_t index);
-    void AddAndSwap(size_t index, const Polynomial<Field, Comparator> &polynomial);
+        void Add(const LocalPolynomial& other);
+        void Add(LocalPolynomial&& other);
 
-    bool operator==(const PolySystem<Field, Comparator> &other) const;
+        LocalPolynomial SwapAndPop(size_t index);
+        void AddAndSwap(size_t index, const LocalPolynomial& polynomial);
+        void AddAndSwap(size_t index, LocalPolynomial&& polynomial);
 
-private:
-    std::vector<Polynomial<Field, Comparator>> polynomials_;
+        // TODO add comparison operator (and one for system with different comparator
+
+    private:
+        std::vector<LocalPolynomial> polynomials_;
 };
 
-template<IsField Field, IsComparator Comparator>
-PolySystem<Field, Comparator>::PolySystem(const std::vector<Polynomial<Field, Comparator>> &polys) : polynomials_(
-        polys) {
+template <IsSupportedField Field, IsComparator Comparator>
+PolySystem<Field, Comparator>::PolySystem(std::vector<LocalPolynomial>&& polys)
+    : polynomials_(std::move(polys)) {}
 
+template <IsSupportedField Field, IsComparator Comparator>
+PolySystem<Field, Comparator>::PolySystem(
+    std::initializer_list<LocalPolynomial> polys) {
+    polynomials_.insert(polynomials_.begin(), polys.begin(), polys.end());
 }
 
-template<IsField Field, IsComparator Comparator>
-bool PolySystem<Field, Comparator>::operator==(const PolySystem<Field, Comparator> &other) const {
-    return polynomials_ == other.polynomials_;
+template <IsSupportedField Field, IsComparator Comparator>
+template <Details::IsIterator It>
+PolySystem<Field, Comparator>::PolySystem(It begin, It end) {
+    polynomials_.insert(polynomials_.begin(), begin, end);
 }
 
-template<IsField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::AddAndSwap(size_t index, const Polynomial<Field, Comparator> &polynomial) {
+template <IsSupportedField Field, IsComparator Comparator>
+size_t PolySystem<Field, Comparator>::GetSize() const {
+    return polynomials_.size();
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+bool PolySystem<Field, Comparator>::IsEmpty() const {
+    return GetSize() == 0;
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+PolySystem<Field, Comparator>::LocalPolynomial&
+PolySystem<Field, Comparator>::operator[](size_t index) {
+    assert(index < polynomials_.size() && "Out of bounds");
+    return polynomials_[index];
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+const PolySystem<Field, Comparator>::LocalPolynomial&
+PolySystem<Field, Comparator>::operator[](size_t index) const {
+    assert(index < polynomials_.size() && "Out of bounds");
+    return polynomials_[index];
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+void PolySystem<Field, Comparator>::Add(const LocalPolynomial& other) {
+    polynomials_.push_back(other);
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+void PolySystem<Field, Comparator>::Add(LocalPolynomial&& other) {
+    polynomials_.push_back(std::move(other));
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+PolySystem<Field, Comparator>::LocalPolynomial
+PolySystem<Field, Comparator>::SwapAndPop(size_t index) {
+    assert(index < polynomials_.size() && "Out of bounds");
+    std::swap(polynomials_[index], polynomials_.back());
+    LocalPolynomial result(std::move(polynomials_.back()));
+    polynomials_.pop_back();
+    return result;
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+void PolySystem<Field, Comparator>::AddAndSwap(
+    size_t index, const LocalPolynomial& polynomial) {
     assert(index <= polynomials_.size() && "Out of bounds");
     polynomials_.push_back(polynomial);
     std::swap(polynomials_[index], polynomials_.back());
 }
 
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> PolySystem<Field, Comparator>::SwapAndPop(size_t index) {
-    assert(index < polynomials_.size() && "Out of bounds");
+template <IsSupportedField Field, IsComparator Comparator>
+void PolySystem<Field, Comparator>::AddAndSwap(
+    size_t index, PolySystem::LocalPolynomial&& polynomial) {
+    assert(index <= polynomials_.size() && "Out of bounds");
+    polynomials_.push_back(std::move(polynomial));
     std::swap(polynomials_[index], polynomials_.back());
-    Polynomial<Field, Comparator> result(std::move(polynomials_.back()));
-    polynomials_.pop_back();
-    return result;
 }
 
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> &PolySystem<Field, Comparator>::operator[](size_t index) {
-    assert(index < polynomials_.size() && "Out of bounds");
-    return polynomials_[index];
-}
-
-template<IsField Field, IsComparator Comparator>
-bool PolySystem<Field, Comparator>::IsEmpty() const {
-    return polynomials_.empty();
-}
-
-template<IsField Field, IsComparator Comparator>
-size_t PolySystem<Field, Comparator>::GetSize() const {
-    return polynomials_.size();
-}
-
-template<IsField Field, IsComparator Comparator>
-const Polynomial<Field, Comparator> &PolySystem<Field, Comparator>::operator[](size_t index) const {
-    assert(index < polynomials_.size() && "Out of bounds");
-    return polynomials_[index];
-}
-
-template<IsField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::Add(const Polynomial<Field, Comparator> &other) {
-    polynomials_.push_back(other);
-}
-
-template<IsField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::Add(Polynomial<Field, Comparator> &&other) {
-    polynomials_.push_back(std::move(other));
-}
+}  // namespace Groebner

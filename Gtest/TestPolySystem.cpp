@@ -1,36 +1,39 @@
-#include "gtest/gtest.h"
 #include "PolySystem.h"
+#include "gtest/gtest.h"
 
+namespace Groebner::Test {
+
+template <IsSupportedField Field, IsComparator Comparator>
+void CheckEqual(const PolySystem<Field, Comparator>& lhs,
+                const PolySystem<Field, Comparator>& rhs) {
+    ASSERT_EQ(lhs.GetSize(), rhs.GetSize());
+    for (size_t i = 0; i < lhs.GetSize(); i++) {
+        ASSERT_EQ(lhs[i], rhs[i]);
+    }
+}
 
 TEST(PolySystemBasic, FastPushPop) {
-    Polynomial<Rational, LexOrder> x({Monomial(Rational(3), MonomialDegree(2, {2, 0})),
-                                      Monomial(Rational(1), MonomialDegree(2, {1, 1})),
-                                      Monomial(Rational(2), MonomialDegree(2, {0, 1}))});
-    Polynomial<Rational, LexOrder> y({Monomial(Rational(3), MonomialDegree(2, {2, 0})),
-                                      Monomial(Rational(1), MonomialDegree(2, {1, 1})),
-                                      Monomial(Rational(2), MonomialDegree(2, {0, 1}))});
-    Polynomial<Rational, LexOrder> z({Monomial(Rational(3), MonomialDegree(2, {2, 0})),
-                                      Monomial(Rational(1), MonomialDegree(2, {1, 1})),
-                                      Monomial(Rational(2), MonomialDegree(2, {0, 1}))});
+    Polynomial<Rational, LexOrder> x = {{3, {2, 0}}, {1, {1, 1}}, {2, {0, 1}}};
+    Polynomial<Rational, LexOrder> y = {{3, {2, 1}}, {1, {1, 1}}, {2, {0, 1}}};
+    Polynomial<Rational, LexOrder> z = {{3, {2, 2}}, {1, {1, 1}}, {2, {0, 1}}};
 
     PolySystem<Rational, LexOrder> sys({x, y, z});
-
     PolySystem<Rational, LexOrder> copy(sys);
 
     {
-        PolySystem<Rational, LexOrder> temp({y, z});
+        PolySystem<Rational, LexOrder> temp({z, y});
         sys.SwapAndPop(0);
-        EXPECT_EQ(sys, temp);
+        CheckEqual(sys, temp);
         sys.AddAndSwap(0, x);
-        EXPECT_EQ(sys, copy);
+        CheckEqual(sys, copy);
     }
 
     {
         PolySystem<Rational, LexOrder> temp({x, y});
         sys.SwapAndPop(2);
-        EXPECT_EQ(sys, temp);
+        CheckEqual(sys, temp);
         sys.AddAndSwap(2, z);
-        EXPECT_EQ(sys, copy);
+        CheckEqual(sys, copy);
     }
 
     {
@@ -38,3 +41,4 @@ TEST(PolySystemBasic, FastPushPop) {
         EXPECT_DEATH(sys.AddAndSwap(4, x), "Out of bounds");
     }
 }
+}  // namespace Groebner::Test
