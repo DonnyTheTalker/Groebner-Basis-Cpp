@@ -13,7 +13,7 @@ namespace Groebner {
         template <typename T>
         constexpr inline bool IsSupportedFieldV = IsInList<T, SupportedFields>;
 
-        template <size_t N>
+        template <int64_t N>
         constexpr inline bool IsSupportedFieldV<Modulo<N>> = IsPrime(N);
     }
 
