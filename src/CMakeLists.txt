@@ -19,10 +19,10 @@ set(HEADER_FILES
 set(SOURCE_FILES
         Rational.cpp
         Monomial.cpp
-        Polynomial.cpp
         PolySystem.cpp
         GroebnerBuilder.cpp
         MonomialCompare.cpp
+        Modulo.cpp
 )
 
 add_library(src STATIC ${SOURCE_FILES} ${HEADER_FILES})

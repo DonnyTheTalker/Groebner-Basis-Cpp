@@ -8,7 +8,7 @@ class Rational {
     public:
         using ValueType = int64_t;
 
-        explicit Rational(ValueType numerator = 0, ValueType denominator = 1);
+        Rational(ValueType numerator = 0, ValueType denominator = 1);
 
         ValueType GetNumerator() const;
         ValueType GetDenominator() const;
