@@ -13,8 +13,8 @@ void CheckEqual(const Polynomial<Field, Comparator>& poly,
 template <IsSupportedField Field, IsComparator Comparator>
 void CheckSorted(const Polynomial<Field, Comparator>& poly) {
     for (size_t i = 0; i + 1 < poly.GetSize(); ++i) {
-        ASSERT_TRUE(Comparator::IsGreater(poly.GetAt(i).monomial,
-                                          poly.GetAt(i + 1).monomial));
+        ASSERT_TRUE(Comparator::IsGreater(poly.GetAt(i).degree,
+                                          poly.GetAt(i + 1).degree));
     }
 };
 

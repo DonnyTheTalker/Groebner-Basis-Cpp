@@ -11,10 +11,10 @@ namespace Groebner {
 template <IsSupportedField Field>
 struct Term {
         Field coef;
-        Monomial monomial;
+        Monomial degree;
 
         bool operator==(const Term& other) const {
-            return coef == other.coef && monomial == other.monomial;
+            return coef == other.coef && degree == other.degree;
         }
 
         bool operator!=(const Term& other) const {

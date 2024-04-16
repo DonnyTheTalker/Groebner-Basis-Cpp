@@ -38,6 +38,7 @@ void Monomial::SetDegree(size_t ind, Monomial::DegreeType val) {
     if (ind < GetSize()) {
         sum_degree_ -= degrees_[ind];
     } else {
+        // TODO do more efficient expansion
         Expand(ind + 1);
     }
 

@@ -12,14 +12,13 @@ set(HEADER_FILES
         ComparatorFwd.h
         Polynomial.h
         PolySystem.h
-        GroebnerBuilder.h
+        GroebnerAlgorithm.h
         ListFwd.h
 )
 
 set(SOURCE_FILES
         Rational.cpp
         Monomial.cpp
-        GroebnerBuilder.cpp
         MonomialCompare.cpp
         Modulo.cpp
 )

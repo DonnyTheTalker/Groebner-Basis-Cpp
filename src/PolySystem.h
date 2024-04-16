@@ -16,6 +16,7 @@ class PolySystem {
         PolySystem() = default;
 
         // TODO add constructors for other Comparator
+        // and check for 0 polynomials
         explicit PolySystem(std::vector<LocalPolynomial>&& polys);
         PolySystem(std::initializer_list<LocalPolynomial> polys);
         template <Details::IsIterator It>
@@ -29,6 +30,8 @@ class PolySystem {
 
         void Add(const LocalPolynomial& other);
         void Add(LocalPolynomial&& other);
+
+        // TODO add slow pop from any position
 
         LocalPolynomial SwapAndPop(size_t index);
         void AddAndSwap(size_t index, const LocalPolynomial& polynomial);
