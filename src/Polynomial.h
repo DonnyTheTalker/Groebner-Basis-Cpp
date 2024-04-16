@@ -4,204 +4,244 @@
 #include "FieldFwd.h"
 
 #include <algorithm>
+#include <map>
 
-template<IsField Field, IsComparator Comparator = LexOrder>
-class Polynomial {
-public:
-    Polynomial() = default;
+namespace Groebner {
 
-    // TODO add constructor for std::vector<>&&
-    explicit Polynomial(const std::vector<Monomial<Field>> &monomials);
-    Polynomial(const Polynomial<Field, Comparator> &other) = default;
-    Polynomial(Polynomial<Field, Comparator> &&other) noexcept = default;
-    Polynomial &operator=(const Polynomial<Field, Comparator> &other) = default;
-    Polynomial &operator=(Polynomial &&other) = default;
+template <IsSupportedField Field>
+struct Term {
+        Field coef;
+        Monomial monomial;
 
-public:
-    // TODO add method get size
-    const std::vector<Monomial<Field>> &GetMonomials() const;
-    const Monomial<Field>& GetLeader() const;
-    bool IsZero() const;
+        bool operator==(const Term& other) const {
+            return coef == other.coef && monomial == other.monomial;
+        }
 
-    // TODO change name to smth less strange
-    void ReduceCoef();
-
-public:
-    Polynomial<Field, Comparator> &operator+=(const Polynomial<Field, Comparator> &other);
-    Polynomial<Field, Comparator> &operator-=(const Polynomial<Field, Comparator> &other);
-    Polynomial<Field, Comparator> &operator*=(const Polynomial<Field, Comparator> &other);
-
-    Polynomial<Field, Comparator> operator+(const Polynomial<Field, Comparator> &other) const;
-    Polynomial<Field, Comparator> operator-(const Polynomial<Field, Comparator> &other) const;
-    Polynomial<Field, Comparator> operator*(const Polynomial<Field, Comparator> &other) const;
-
-
-    bool operator==(const Polynomial<Field, Comparator> &other) const;
-
-private:
-    void SortMonomials();
-
-private:
-    // TODO create type with using for std::vector
-    // assuming Monomials have different degrees (3x + 5x -> 8x)
-    // no monomials with coefficient 0
-    std::vector<Monomial<Field>> monomials_ = {};
+        bool operator!=(const Term& other) const {
+            return !(*this == other);
+        }
 };
 
-template<IsField Field, IsComparator Comparator>
-void Polynomial<Field, Comparator>::ReduceCoef() {
-    const Field coef = GetLeader().GetCoef();
-    for (size_t i = 0; i < monomials_.size(); i++) {
-        monomials_[i].GetCoef() /= coef;
+using RationalTerm = Term<Rational>;
+template <int64_t N>
+requires IsPrime<N> using ModuloTerm = Term<Modulo<N>>;
+
+template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+class Polynomial {
+    private:
+        using LocalTerm = Term<Field>;
+
+    public:
+        Polynomial() = default;
+        explicit Polynomial(std::vector<LocalTerm>&& monomials);
+        Polynomial(std::initializer_list<LocalTerm> monomials);
+        template <Details::IsIterator It>
+        Polynomial(It begin, It end);
+        // TODO add constructor from Polynomial with different comparator
+
+        size_t GetSize() const;
+        bool IsZero() const;
+        LocalTerm GetLeader() const;
+        // TODO add iterators
+        LocalTerm GetAt(size_t i) const;
+        void ReduceByLeaderCoef();
+
+        Polynomial<Field, Comparator>& operator+=(
+            const Polynomial<Field, Comparator>& other);
+        Polynomial<Field, Comparator>& operator-=(
+            const Polynomial<Field, Comparator>& other);
+        Polynomial<Field, Comparator>& operator*=(
+            const Polynomial<Field, Comparator>& other);
+
+        Polynomial<Field, Comparator> operator+(
+            const Polynomial<Field, Comparator>& other) const;
+        Polynomial<Field, Comparator> operator-(
+            const Polynomial<Field, Comparator>& other) const;
+        Polynomial<Field, Comparator> operator*(
+            const Polynomial<Field, Comparator>& other) const;
+
+        bool operator==(const Polynomial<Field, Comparator>& other) const;
+        bool operator!=(const Polynomial<Field, Comparator>& other) const;
+
+        // TODO add == for Polynomial with different comparator
+    private:
+        void Reduce();
+
+        struct Compare {
+                bool operator()(const Monomial& lhs,
+                                const Monomial& rhs) const {
+                    return Comparator::IsGreater(lhs, rhs);
+                }
+        };
+
+        using PolyTable = std::map<Monomial, Field, Compare>;
+        // assuming monomials have different degrees (3x + 5x -> 8x)
+        // and no monomials with coefficient 0
+        PolyTable monomials_;
+};
+
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator>::Polynomial(std::vector<LocalTerm>&& monomials) {
+    for (auto& [coef, degree] : monomials) {
+        auto it = monomials_.find(degree);
+        if (it == monomials_.end()) {
+            monomials_[std::move(degree)] = std::move(coef);
+        } else {
+            it->second += coef;
+        }
     }
+    Reduce();
 }
 
-template<IsField Field, IsComparator Comparator>
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator>::Polynomial(
+    std::initializer_list<LocalTerm> monomials) {
+    for (auto& [coef, degree] : monomials) {
+        auto it = monomials_.find(degree);
+        if (it == monomials_.end()) {
+            monomials_[degree] = coef;
+        } else {
+            it->second += coef;
+        }
+    }
+    Reduce();
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+template <Details::IsIterator It>
+Polynomial<Field, Comparator>::Polynomial(It begin, It end) {
+    for (auto cur = begin; cur != end; cur++) {
+        auto& [coef, degree] = *cur;
+        auto it = monomials_.find(degree);
+        if (it == monomials_.end()) {
+            monomials_[degree] = coef;
+        } else {
+            it->second += coef;
+        }
+    }
+    Reduce();
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+size_t Polynomial<Field, Comparator>::GetSize() const {
+    return monomials_.size();
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
 bool Polynomial<Field, Comparator>::IsZero() const {
-    return monomials_.empty();
+    return GetSize() == 0;
 }
 
-template<IsField Field, IsComparator Comparator>
-const Monomial<Field> &Polynomial<Field, Comparator>::GetLeader() const {
-    assert(!monomials_.empty() && "Empty polynomial");
-    return monomials_.front();
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator>::LocalTerm
+Polynomial<Field, Comparator>::GetLeader() const {
+    if (IsZero()) {
+        return {0, 0};
+    }
+
+    auto [degree, coef] = *(monomials_.begin());
+    return LocalTerm(coef, degree);
 }
 
-template<IsField Field, IsComparator Comparator>
-const std::vector<Monomial<Field>> &Polynomial<Field, Comparator>::GetMonomials() const {
-    return monomials_;
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator>::LocalTerm Polynomial<Field, Comparator>::GetAt(
+    size_t i) const {
+    if (i == 0 && IsZero()) {
+        return {0, 0};
+    }
+
+    assert(i < GetSize() && "Out of bounds");
+    auto [degree, coef] = *(std::next(monomials_.begin(), i));
+    return LocalTerm(coef, degree);
 }
 
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator>::Polynomial(const std::vector<Monomial<Field>> &monomials) {
-    monomials_.reserve(monomials.size());
-    for (const Monomial<Field>& monomial : monomials) {
-        if (!monomial.IsZero()) {
-            monomials_.push_back(monomial);
+template <IsSupportedField Field, IsComparator Comparator>
+void Polynomial<Field, Comparator>::ReduceByLeaderCoef() {
+    auto leader_coef = GetLeader().coef;
+    for (auto& [degree, coef] : monomials_) {
+        coef /= leader_coef;
+    }
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator>& Polynomial<Field, Comparator>::operator+=(
+    const Polynomial<Field, Comparator>& other) {
+    for (auto& [degree, coef] : other.monomials_) {
+        monomials_[degree] += coef;
+    }
+    Reduce();
+    return *this;
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator>& Polynomial<Field, Comparator>::operator-=(
+    const Polynomial<Field, Comparator>& other) {
+    for (auto& [degree, coef] : other.monomials_) {
+        monomials_[degree] -= coef;
+    }
+    Reduce();
+    return *this;
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator>& Polynomial<Field, Comparator>::operator*=(
+    const Polynomial<Field, Comparator>& other) {
+    PolyTable result;
+    for (auto& [rhs_degree, rhs_coef] : other.monomials_) {
+        for (auto& [lhs_degree, lhs_coef] : monomials_) {
+            result[rhs_degree + lhs_degree] += (rhs_coef * lhs_coef);
         }
     }
-    SortMonomials();
-}
-
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator+=(const Polynomial<Field, Comparator> &other) {
-    std::vector<Monomial<Field>> result;
-    result.reserve(monomials_.size());
-
-    size_t left = 0;
-    size_t right = 0;
-
-    while (left < monomials_.size() && right < other.monomials_.size()) {
-        if (Comparator::IsEqual(monomials_[left], other.monomials_[right])) {
-            // TODO std move if this != &other
-            result.push_back(monomials_[left++]);
-            result.back() += other.monomials_[right++];
-            if (result.back().IsZero()) {
-                result.pop_back();
-            }
-        } else if (Comparator::IsGreater(monomials_[left], other.monomials_[right])) {
-            // TODO std move if this != &other
-            result.push_back(monomials_[left++]);
-        } else {
-            result.push_back(other.monomials_[right++]);
-        }
-    }
-
-    while (left < monomials_.size()) {
-        result.push_back(std::move(monomials_[left++]));
-    }
-    while (right < other.monomials_.size()) {
-        result.push_back(other.monomials_[right++]);
-    }
-
     monomials_ = std::move(result);
+    Reduce();
     return *this;
 }
 
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator-=(const Polynomial<Field, Comparator> &other) {
-    std::vector<Monomial<Field>> result;
-    result.reserve(monomials_.size());
-
-    size_t left = 0;
-    size_t right = 0;
-
-    while (left < monomials_.size() && right < other.monomials_.size()) {
-        if (Comparator::IsEqual(monomials_[left], other.monomials_[right])) {
-            // TODO std move if this != &other
-            result.push_back(monomials_[left++]);
-            result.back() -= other.monomials_[right++];
-            if (result.back().IsZero()) {
-                result.pop_back();
-            }
-        } else if (Comparator::IsGreater(monomials_[left], other.monomials_[right])) {
-            // TODO std move if this != &other
-            result.push_back(monomials_[left++]);
-        } else {
-            result.push_back(-other.monomials_[right++]);
-        }
-    }
-
-    while (left < monomials_.size()) {
-        result.push_back(std::move(monomials_[left++]));
-    }
-    while (right < other.monomials_.size()) {
-        result.push_back(-other.monomials_[right++]);
-    }
-
-    monomials_ = std::move(result);
-    return *this;
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator> Polynomial<Field, Comparator>::operator+(
+    const Polynomial<Field, Comparator>& other) const {
+    Polynomial temp(*this);
+    temp += other;
+    return temp;
 }
 
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator> &Polynomial<Field, Comparator>::operator*=(const Polynomial<Field, Comparator> &other) {
-    Polynomial<Field, Comparator> result;
-
-    for (size_t i = 0; i < other.monomials_.size(); i++) {
-        // TODO optimize
-        std::vector<Monomial<Field>> row;
-        row.reserve(monomials_.size());
-        for (size_t j = 0; j < monomials_.size(); j++) {
-            row.push_back(other.monomials_[i] * monomials_[j]);
-        }
-        result += Polynomial<Field, Comparator>(row);
-    }
-
-    monomials_ = std::move(result.monomials_);
-    // TODO check if needed
-//    SortMonomials();
-    return *this;
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator> Polynomial<Field, Comparator>::operator-(
+    const Polynomial<Field, Comparator>& other) const {
+    Polynomial temp(*this);
+    temp -= other;
+    return temp;
 }
 
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator>
-Polynomial<Field, Comparator>::operator+(const Polynomial<Field, Comparator> &other) const {
+template <IsSupportedField Field, IsComparator Comparator>
+Polynomial<Field, Comparator> Polynomial<Field, Comparator>::operator*(
+    const Polynomial<Field, Comparator>& other) const {
     Polynomial<Field, Comparator> temp(*this);
-    return temp += other;
+    temp *= other;
+    return temp;
 }
 
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator>
-Polynomial<Field, Comparator>::operator-(const Polynomial<Field, Comparator> &other) const {
-    Polynomial<Field, Comparator> temp(*this);
-    return temp -= other;
-}
-
-template<IsField Field, IsComparator Comparator>
-Polynomial<Field, Comparator>
-Polynomial<Field, Comparator>::operator*(const Polynomial<Field, Comparator> &other) const {
-    Polynomial<Field, Comparator> temp(*this);
-    return temp *= other;
-}
-
-template<IsField Field, IsComparator Comparator>
-void Polynomial<Field, Comparator>::SortMonomials() {
-    std::sort(monomials_.begin(), monomials_.end(), [](const Monomial<Field> &lhs, const Monomial<Field> &rhs) {
-        return Comparator::IsGreater(lhs, rhs);
-    });
-}
-
-template<IsField Field, IsComparator Comparator>
-bool Polynomial<Field, Comparator>::operator==(const Polynomial<Field, Comparator> &other) const {
+template <IsSupportedField Field, IsComparator Comparator>
+bool Polynomial<Field, Comparator>::operator==(
+    const Polynomial<Field, Comparator>& other) const {
     return monomials_ == other.monomials_;
 }
+
+template <IsSupportedField Field, IsComparator Comparator>
+bool Polynomial<Field, Comparator>::operator!=(
+    const Polynomial<Field, Comparator>& other) const {
+    return !(*this == other);
+}
+
+template <IsSupportedField Field, IsComparator Comparator>
+void Polynomial<Field, Comparator>::Reduce() {
+    for (auto it = monomials_.begin(); it != monomials_.end();) {
+        if (it->second.IsZero()) {
+            monomials_.erase(it++);
+        } else {
+            ++it;
+        }
+    }
+}
+
+}  // namespace Groebner

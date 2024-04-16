@@ -25,7 +25,7 @@ namespace Details {
     ModuloValueType FindGcdExtended(ModuloValueType x, ModuloValueType y,
                                     ModuloValueType* coef_x,
                                     ModuloValueType* coef_y);
-}
+}  // namespace Details
 
 template <int64_t N>
 concept IsPrime = Details::IsPrime(N);
@@ -35,9 +35,7 @@ requires IsPrime<Modulus> class Modulo {
     public:
         using ValueType = Details::ModuloValueType;
 
-        explicit Modulo(ValueType value = 0) : value_(value) {
-            Normalize();
-        }
+        Modulo(ValueType value = 0) : value_(value) { Normalize(); }
 
         ValueType GetValue() const { return value_; }
 
@@ -113,13 +111,9 @@ requires IsPrime<Modulus> class Modulo {
             return (*this < other) || (*this == other);
         }
 
-        bool operator>(const Modulo& other) const {
-            return other < *this;
-        }
+        bool operator>(const Modulo& other) const { return other < *this; }
 
-        bool operator>=(const Modulo& other) const {
-            return other <= *this;
-        }
+        bool operator>=(const Modulo& other) const { return other <= *this; }
 
     private:
         void Normalize() {
