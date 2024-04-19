@@ -28,7 +28,7 @@ class GroebnerAlgorithm {
                 if (poly_system[i].IsZero()) {
                     continue;
                 }
-                AddReminders(poly_system[i], poly_system);
+                AddRemindersToPolyAtPos(i, poly_system);
             }
             if (reduction == AutoReduction::Enabled) {
                 ReduceBasisInplace(poly_system);
@@ -88,21 +88,15 @@ class GroebnerAlgorithm {
             const Polynomial<Field, Comparator>& lhs,
             const Polynomial<Field, Comparator>& rhs) {
 
-            auto lhs_leader = lhs.GetLeader();
-            auto rhs_leader = rhs.GetLeader();
+            const auto& [lhs_coef, lhs_degree] = lhs.GetLeader();
+            const auto& [rhs_coef, rhs_degree] = rhs.GetLeader();
 
             auto common_degree =
-                FindMinimalCommonDegree(lhs_leader.degree, rhs_leader.degree);
-            // TODO add /= method for Term
-            // and poly * term
-            auto spoly =
-                (lhs * Polynomial<Field, Comparator>(
-                           {{rhs_leader.coef,
-                             {common_degree - lhs_leader.degree}}})) -
-                (rhs *
-                 Polynomial<Field, Comparator>(
-                     {{lhs_leader.coef, {common_degree - rhs_leader.degree}}}));
+                FindMinimalCommonDegree(lhs_degree, rhs_degree);
+            Term<Field> lcm{lhs_coef * rhs_coef, common_degree};
 
+            auto spoly =
+                lhs * (lcm / lhs.GetLeader()) - rhs * (lcm / rhs.GetLeader());
             return SPolyInfo(std::move(spoly), std::move(common_degree));
         }
 
@@ -114,8 +108,8 @@ class GroebnerAlgorithm {
 
             while (!poly.IsZero()) {
                 if (!DividePoly(poly, poly_system)) {
-                    rem += Polynomial<Field, Comparator>({poly.GetLeader()});
-                    poly -= Polynomial<Field, Comparator>({poly.GetLeader()});
+                    rem += poly.GetLeader();
+                    poly -= poly.GetLeader();
                 }
             }
 
@@ -126,19 +120,18 @@ class GroebnerAlgorithm {
         static Polynomial<Field, Comparator> ReducePolynomial(
             const Polynomial<Field, Comparator>& poly,
             const PolySystem<Field, Comparator>& poly_system) {
-            auto temp = poly;
+            Polynomial<Field, Comparator> temp = poly;
             return ReducePolynomial(std::move(temp), poly_system);
         }
 
     private:
-        // TODO add pos argument - optimization
         template <IsSupportedField Field, IsComparator Comparator>
-        static void AddReminders(const Polynomial<Field, Comparator>& poly,
-                                 PolySystem<Field, Comparator>& poly_system) {
-            auto leader = poly.GetLeader();
-            for (size_t j = 0; j < poly_system.GetSize(); j++) {
+        static void AddRemindersToPolyAtPos(
+            size_t pos, PolySystem<Field, Comparator>& poly_system) {
+            auto leader = poly_system[pos].GetLeader();
+            for (size_t j = 0; j < pos; j++) {
                 auto other_leader = poly_system[j].GetLeader();
-                SPolyInfo info = SPolynomial(poly, poly_system[j]);
+                SPolyInfo info = SPolynomial(poly_system[pos], poly_system[j]);
 
                 if (leader.degree + other_leader.degree == info.common_degree) {
                     continue;
@@ -156,19 +149,15 @@ class GroebnerAlgorithm {
         static bool DividePoly(
             Polynomial<Field, Comparator>& poly,
             const PolySystem<Field, Comparator>& poly_system) {
+            const auto& [coef, degree] = poly.GetLeader();
             for (size_t i = 0; i < poly_system.GetSize(); ++i) {
-                // TODO add IsDivisible method somewhere in Monomial
-                if (StraightCoordinateOrder::IsGreaterOrEqual(
-                        poly.GetLeader().degree,
-                        poly_system[i].GetLeader().degree)) {
-                    // TODO add / operator for Term
-                    // add checks for 0 coef
+                const auto& [other_coef, other_degree] =
+                    poly_system[i].GetLeader();
+                if (degree.IsDivisible(other_degree)) {
+                    assert(!poly_system[i].GetLeader().coef.IsZero() &&
+                           "Can't divide by zero");
                     poly -= poly_system[i] *
-                            Polynomial<Field, Comparator>(
-                                {{poly.GetLeader().coef /
-                                      poly_system[i].GetLeader().coef,
-                                  {poly.GetLeader().degree -
-                                   poly_system[i].GetLeader().degree}}});
+                            (poly.GetLeader() / poly_system[i].GetLeader());
                     return true;
                 }
             }
@@ -176,18 +165,16 @@ class GroebnerAlgorithm {
             return false;
         }
 
-        // TODO change to better name
         template <IsSupportedField Field, IsComparator Comparator>
         static bool CanEraseFromBasisAtPos(
             const PolySystem<Field, Comparator>& basis, size_t pos) {
+            const auto& [coef, degree] = basis[pos].GetLeader();
             for (size_t j = 0; j < basis.GetSize(); j++) {
+                const auto& [other_coef, other_degree] = basis[j].GetLeader();
                 if (pos != j &&
-                    ((pos < j && StraightCoordinateOrder::IsGreaterOrEqual(
-                                     basis[pos].GetLeader().degree,
-                                     basis[j].GetLeader().degree) ||
-                      (pos > j && StraightCoordinateOrder::IsGreater(
-                                      basis[pos].GetLeader().degree,
-                                      basis[j].GetLeader().degree))))) {
+                    ((pos < j && degree.IsDivisible(other_degree)) ||
+                     (pos > j && degree != other_degree &&
+                      degree.IsDivisible(other_degree)))) {
                     return true;
                 }
             }

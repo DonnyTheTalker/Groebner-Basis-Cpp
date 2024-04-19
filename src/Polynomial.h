@@ -18,6 +18,18 @@ struct Term {
         }
 
         bool operator!=(const Term& other) const { return !(*this == other); }
+
+        Term<Field>& operator/=(const Term& other) {
+            coef /= other.coef;
+            degree -= other.degree;
+            return *this;
+        }
+
+        Term<Field> operator/(const Term& other) const {
+            Term temp(*this);
+            temp /= other;
+            return temp;
+        }
 };
 
 using RationalTerm = Term<Rational>;
@@ -28,6 +40,7 @@ template <IsSupportedField Field, IsComparator Comparator = LexOrder>
 class Polynomial {
     private:
         using LocalTerm = Term<Field>;
+        using LocalPoly = Polynomial<Field, Comparator>;
 
     public:
         Polynomial() = default;
@@ -99,8 +112,7 @@ class Polynomial {
             }
         }
 
-        Polynomial<Field, Comparator>& operator+=(
-            const Polynomial<Field, Comparator>& other) {
+        LocalPoly& operator+=(const LocalPoly& other) {
             for (auto& [degree, coef] : other.monomials_) {
                 monomials_[degree] += coef;
             }
@@ -108,8 +120,7 @@ class Polynomial {
             return *this;
         }
 
-        Polynomial<Field, Comparator>& operator-=(
-            const Polynomial<Field, Comparator>& other) {
+        LocalPoly& operator-=(const LocalPoly& other) {
             for (auto& [degree, coef] : other.monomials_) {
                 monomials_[degree] -= coef;
             }
@@ -117,8 +128,7 @@ class Polynomial {
             return *this;
         }
 
-        Polynomial<Field, Comparator>& operator*=(
-            const Polynomial<Field, Comparator>& other) {
+        LocalPoly& operator*=(const LocalPoly& other) {
             PolyTable result;
             for (auto& [rhs_degree, rhs_coef] : other.monomials_) {
                 for (auto& [lhs_degree, lhs_coef] : monomials_) {
@@ -130,32 +140,74 @@ class Polynomial {
             return *this;
         }
 
-        Polynomial<Field, Comparator> operator+(
-            const Polynomial<Field, Comparator>& other) const {
+        LocalPoly operator+(const LocalPoly& other) const {
             Polynomial temp(*this);
             temp += other;
             return temp;
         }
 
-        Polynomial<Field, Comparator> operator-(
-            const Polynomial<Field, Comparator>& other) const {
+        LocalPoly operator-(const LocalPoly& other) const {
             Polynomial temp(*this);
             temp -= other;
             return temp;
         }
 
-        Polynomial<Field, Comparator> operator*(
-            const Polynomial<Field, Comparator>& other) const {
-            Polynomial<Field, Comparator> temp(*this);
+        LocalPoly operator*(const LocalPoly& other) const {
+            LocalPoly temp(*this);
             temp *= other;
             return temp;
         }
 
+        // TODO add tests
+        LocalPoly& operator+=(const LocalTerm& term) {
+            monomials_[term.degree] += term.coef;
+            if (monomials_[term.degree].IsZero()) {
+                monomials_.erase(term.degree);
+            }
+            return *this;
+        }
+
+        LocalPoly& operator-=(const LocalTerm& term) {
+            monomials_[term.degree] -= term.coef;
+            if (monomials_[term.degree].IsZero()) {
+                monomials_.erase(term.degree);
+            }
+            return *this;
+        }
+
+        LocalPoly& operator*=(const LocalTerm& term) {
+            PolyTable result;
+            for (auto& [degree, coef] : monomials_) {
+                result[degree + term.degree] += (coef * term.coef);
+            }
+            monomials_ = std::move(result);
+            Reduce();
+            return *this;
+        }
+
+        LocalPoly operator+(const LocalTerm& term) const {
+            LocalPoly poly(*this);
+            poly += term;
+            return poly;
+        }
+
+        LocalPoly operator-(const LocalTerm& term) const {
+            LocalPoly poly(*this);
+            poly -= term;
+            return poly;
+        }
+
+        LocalPoly operator*(const LocalTerm& term) const {
+            LocalPoly poly(*this);
+            poly *= term;
+            return poly;
+        }
+
         // TODO add == for Polynomial with different comparator
-        bool operator==(const Polynomial<Field, Comparator>& other) const {
+        bool operator==(const LocalPoly& other) const {
             return monomials_ == other.monomials_;
         }
-        bool operator!=(const Polynomial<Field, Comparator>& other) const {
+        bool operator!=(const LocalPoly& other) const {
             return !(*this == other);
         }
 

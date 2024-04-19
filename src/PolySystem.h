@@ -16,7 +16,6 @@ class PolySystem {
         PolySystem() = default;
 
         // TODO add constructors for other Comparator
-        // and check for 0 polynomials
         explicit PolySystem(std::vector<LocalPolynomial>&& polys) {
             polynomials_.reserve(polys.size());
             for (auto& poly : polys) {

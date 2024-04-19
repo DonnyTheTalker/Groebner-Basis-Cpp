@@ -39,6 +39,8 @@ class Monomial {
         bool operator==(const Monomial& other) const;
         bool operator!=(const Monomial& other) const;
 
+        bool IsDivisible(const Monomial& other) const;
+
     private:
         void Expand(size_t new_size);
 

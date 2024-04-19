@@ -37,7 +37,6 @@ void Monomial::SetDegree(size_t ind, Monomial::DegreeType val) {
     if (ind < GetSize()) {
         sum_degree_ -= degrees_[ind];
     } else {
-        // TODO do more efficient expansion
         Expand(ind + 1);
     }
 
@@ -58,9 +57,7 @@ Monomial& Monomial::operator+=(const Monomial& other) {
 }
 
 Monomial& Monomial::operator-=(const Monomial& other) {
-    assert(StraightCoordinateOrder::IsGreaterOrEqual(*this, other) &&
-           "Can't substitute from lower degree");
-
+    assert(IsDivisible(other) && "Can't substitute from lower degree");
     if (GetSize() < other.GetSize()) {
         Expand(other.GetSize());
     }
@@ -85,17 +82,15 @@ Monomial Monomial::operator-(const Monomial& other) const {
 }
 
 bool Monomial::operator==(const Monomial& other) const {
-    for (size_t i = 0; i < std::max(GetSize(), other.GetSize()); i++) {
-        if (GetDegree(i) != other.GetDegree(i)) {
-            return false;
-        }
-    }
-
-    return true;
+    return StraightCoordinateOrder::IsEqual(*this, other);
 }
 
 bool Monomial::operator!=(const Monomial& other) const {
     return !(*this == other);
+}
+
+bool Monomial::IsDivisible(const Monomial& other) const {
+    return StraightCoordinateOrder::IsGreaterOrEqual(*this, other);
 }
 
 void Monomial::Expand(size_t new_size) {
