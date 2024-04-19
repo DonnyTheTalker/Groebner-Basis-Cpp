@@ -68,7 +68,7 @@ requires IsPrime<Modulus> class Modulo {
 
         Modulo& operator/=(const Modulo& other) {
             assert(other.value_ != 0 && "Can't divide by zero");
-            value_ *= other.GetInversed().value_;
+            value_ *= other.GetInverse().value_;
             Normalize();
             return *this;
         }
@@ -134,7 +134,7 @@ requires IsPrime<Modulus> class Modulo {
             Normalize();
         }
 
-        Modulo GetInversed() const {
+        Modulo GetInverse() const {
             Modulo temp(*this);
             temp.Inverse();
             return temp;

@@ -16,7 +16,7 @@ TEST(Builder, Lcm) {
     {
         Monomial x{1, 2, 3};
         Monomial y{1, 2, 3};
-        Monomial z = GroebnerAlgorithm::FindLcm(x, y);
+        Monomial z = GroebnerAlgorithm::FindMinimalCommonDegree(x, y);
 
         ASSERT_EQ(z, Monomial({1, 2, 3}));
         ASSERT_EQ(z.GetSumDegree(), 6);
@@ -25,7 +25,7 @@ TEST(Builder, Lcm) {
     {
         Monomial x{1, 2, 3};
         Monomial y{2, 4, 5};
-        Monomial z = GroebnerAlgorithm::FindLcm(x, y);
+        Monomial z = GroebnerAlgorithm::FindMinimalCommonDegree(x, y);
 
         ASSERT_EQ(z, Monomial({2, 4, 5}));
         ASSERT_EQ(z.GetSumDegree(), 11);
@@ -34,7 +34,7 @@ TEST(Builder, Lcm) {
     {
         Monomial x({1, 2, 3});
         Monomial y({2, 2, 1});
-        Monomial z = GroebnerAlgorithm::FindLcm(x, y);
+        Monomial z = GroebnerAlgorithm::FindMinimalCommonDegree(x, y);
 
         ASSERT_EQ(z, Monomial({2, 2, 3}));
         ASSERT_EQ(z.GetSumDegree(), 7);
@@ -485,23 +485,23 @@ TEST(BasisBuild, BasisAlready) {
 }
 
 TEST(BasisBuild, Advanced) {
-    //    {
-    //        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
-    //        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
-    //
-    //
-    //        Polynomial<Rational, LexOrder> x1{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
-    //        Polynomial<Rational, LexOrder> y1{{1, {1, 1}}, {-1, {0, 2}}};
-    //        Polynomial<Rational, LexOrder> z1{{-2, {0, 3}}, {-1, {0, 1}}};
-    //
-    //        PolySystem<Rational, LexOrder> basis({x, y});
-    //        PolySystem<Rational, LexOrder> expected({x1, y1, z1});
-    //
-    //        basis = GroebnerAlgorithm::BuildGB(basis);
-    //        CheckEqual(basis, expected);
-    //        ASSERT_FALSE(basis.IsEmpty());
-    //        ASSERT_EQ(basis.GetSize(), 3);
-    //    }
+        {
+            Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+            Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+
+            Polynomial<Rational, LexOrder> x1{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+            Polynomial<Rational, LexOrder> y1{{1, {1, 1}}, {-1, {0, 2}}};
+            Polynomial<Rational, LexOrder> z1{{1, {0, 3}}, {{1, 2}, {0, 1}}};
+
+            PolySystem<Rational, LexOrder> basis({x, y});
+            PolySystem<Rational, LexOrder> expected({x1, y1, z1});
+
+            basis = GroebnerAlgorithm::BuildGB(basis);
+            CheckEqual(basis, expected);
+            ASSERT_FALSE(basis.IsEmpty());
+            ASSERT_EQ(basis.GetSize(), 3);
+        }
 
     {
         Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};

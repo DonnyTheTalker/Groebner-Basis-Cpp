@@ -23,4 +23,4 @@ set(SOURCE_FILES
         Modulo.cpp
 )
 
-add_library(src STATIC ${SOURCE_FILES} ${HEADER_FILES})
+add_library(src STATIC ${SOURCE_FILES})

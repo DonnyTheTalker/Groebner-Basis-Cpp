@@ -17,106 +17,97 @@ class PolySystem {
 
         // TODO add constructors for other Comparator
         // and check for 0 polynomials
-        explicit PolySystem(std::vector<LocalPolynomial>&& polys);
-        PolySystem(std::initializer_list<LocalPolynomial> polys);
+        explicit PolySystem(std::vector<LocalPolynomial>&& polys) {
+            polynomials_.reserve(polys.size());
+            for (auto& poly : polys) {
+                if (!poly.IsZero()) {
+                    polynomials_.push_back(std::move(poly));
+                }
+            }
+        }
+
+        PolySystem(std::initializer_list<LocalPolynomial> polys) {
+            polynomials_.reserve(polys.size());
+            for (auto& poly : polys) {
+                if (!poly.IsZero()) {
+                    polynomials_.push_back(poly);
+                }
+            }
+        }
+
         template <Details::IsIterator It>
-        PolySystem(It begin, It end);
+        PolySystem(It begin, It end) {
+            polynomials_.reserve(std::distance(begin, end));
+            for (auto it = begin; it != end; it++) {
+                if (!(it->IsZero())) {
+                    polynomials_.push_back(*it);
+                }
+            }
+        }
 
-        size_t GetSize() const;
-        bool IsEmpty() const;
+        size_t GetSize() const { return polynomials_.size(); }
+        bool IsEmpty() const { return GetSize() == 0; }
 
-        const LocalPolynomial& operator[](size_t index) const;
-        LocalPolynomial& operator[](size_t index);
+        const LocalPolynomial& operator[](size_t index) const {
+            assert(index < polynomials_.size() && "Out of bounds");
+            return polynomials_[index];
+        }
 
-        void Add(const LocalPolynomial& other);
-        void Add(LocalPolynomial&& other);
+        LocalPolynomial& operator[](size_t index) {
+            assert(index < polynomials_.size() && "Out of bounds");
+            return polynomials_[index];
+        }
 
-        // TODO add slow pop from any position
+        void Add(const LocalPolynomial& other) {
+            polynomials_.push_back(other);
+        }
+        void Add(LocalPolynomial&& other) {
+            polynomials_.push_back(std::move(other));
+        }
 
-        LocalPolynomial SwapAndPop(size_t index);
-        void AddAndSwap(size_t index, const LocalPolynomial& polynomial);
-        void AddAndSwap(size_t index, LocalPolynomial&& polynomial);
+        // TODO add tests
+        LocalPolynomial Pop(size_t index) {
+            assert(index < polynomials_.size() && "Out of bounds");
+            LocalPolynomial result(std::move(polynomials_[index]));
+            polynomials_.erase(std::next(polynomials_.begin(), index));
+            return result;
+        }
+
+        LocalPolynomial SwapAndPop(size_t index) {
+            assert(index < polynomials_.size() && "Out of bounds");
+            std::swap(polynomials_[index], polynomials_.back());
+            LocalPolynomial result(std::move(polynomials_.back()));
+            polynomials_.pop_back();
+            return result;
+        }
+
+        void AddAndSwap(size_t index, const LocalPolynomial& polynomial) {
+            assert(index <= polynomials_.size() && "Out of bounds");
+            polynomials_.push_back(polynomial);
+            std::swap(polynomials_[index], polynomials_.back());
+        }
+
+        void AddAndSwap(size_t index, LocalPolynomial&& polynomial) {
+            assert(index <= polynomials_.size() && "Out of bounds");
+            polynomials_.push_back(std::move(polynomial));
+            std::swap(polynomials_[index], polynomials_.back());
+        }
 
         // TODO add comparison operator (and one for system with different comparator
-
+    friend class GroebnerAlgorithm;
     private:
+        void Reduce() {
+            size_t sz = polynomials_.size();
+            for (size_t i = 0; i < sz;) {
+                if (polynomials_[i].IsZero()) {
+                    SwapAndPop(i);
+                    sz--;
+                } else {
+                    i++;
+                }
+            }
+        }
+
         std::vector<LocalPolynomial> polynomials_;
 };
-
-template <IsSupportedField Field, IsComparator Comparator>
-PolySystem<Field, Comparator>::PolySystem(std::vector<LocalPolynomial>&& polys)
-    : polynomials_(std::move(polys)) {}
-
-template <IsSupportedField Field, IsComparator Comparator>
-PolySystem<Field, Comparator>::PolySystem(
-    std::initializer_list<LocalPolynomial> polys) {
-    polynomials_.insert(polynomials_.begin(), polys.begin(), polys.end());
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-template <Details::IsIterator It>
-PolySystem<Field, Comparator>::PolySystem(It begin, It end) {
-    polynomials_.insert(polynomials_.begin(), begin, end);
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-size_t PolySystem<Field, Comparator>::GetSize() const {
-    return polynomials_.size();
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-bool PolySystem<Field, Comparator>::IsEmpty() const {
-    return GetSize() == 0;
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-PolySystem<Field, Comparator>::LocalPolynomial&
-PolySystem<Field, Comparator>::operator[](size_t index) {
-    assert(index < polynomials_.size() && "Out of bounds");
-    return polynomials_[index];
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-const PolySystem<Field, Comparator>::LocalPolynomial&
-PolySystem<Field, Comparator>::operator[](size_t index) const {
-    assert(index < polynomials_.size() && "Out of bounds");
-    return polynomials_[index];
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::Add(const LocalPolynomial& other) {
-    polynomials_.push_back(other);
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::Add(LocalPolynomial&& other) {
-    polynomials_.push_back(std::move(other));
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-PolySystem<Field, Comparator>::LocalPolynomial
-PolySystem<Field, Comparator>::SwapAndPop(size_t index) {
-    assert(index < polynomials_.size() && "Out of bounds");
-    std::swap(polynomials_[index], polynomials_.back());
-    LocalPolynomial result(std::move(polynomials_.back()));
-    polynomials_.pop_back();
-    return result;
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::AddAndSwap(
-    size_t index, const LocalPolynomial& polynomial) {
-    assert(index <= polynomials_.size() && "Out of bounds");
-    polynomials_.push_back(polynomial);
-    std::swap(polynomials_[index], polynomials_.back());
-}
-
-template <IsSupportedField Field, IsComparator Comparator>
-void PolySystem<Field, Comparator>::AddAndSwap(
-    size_t index, PolySystem::LocalPolynomial&& polynomial) {
-    assert(index <= polynomials_.size() && "Out of bounds");
-    polynomials_.push_back(std::move(polynomial));
-    std::swap(polynomials_[index], polynomials_.back());
-}
-
 }  // namespace Groebner
