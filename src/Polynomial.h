@@ -158,7 +158,6 @@ class Polynomial {
             return temp;
         }
 
-        // TODO add tests
         LocalPoly& operator+=(const LocalTerm& term) {
             monomials_[term.degree] += term.coef;
             if (monomials_[term.degree].IsZero()) {

@@ -239,6 +239,10 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -250,6 +254,10 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -261,6 +269,10 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -272,6 +284,10 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
     }
 
@@ -292,6 +308,10 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -303,6 +323,10 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -314,6 +338,10 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -325,7 +353,32 @@ TEST(PolynomialArithmetics, Addition) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 += poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
+    }
+
+    {
+        std::vector<RationalTerm> x{{1, {2, 0}}, {1, {1, 1}}, {2, {0, 1}}};
+        RationalTerm y{3, {2, 0}};
+
+        std::vector<RationalTerm> expected{
+            {4, {2, 0}}, {1, {1, 1}}, {2, {0, 1}}};
+
+        Polynomial<Rational, LexOrder> poly1(x.begin(), x.end());
+
+        Polynomial<Rational, LexOrder> poly3 = poly1 + y;
+        Polynomial<Rational, LexOrder> expected_poly(expected.begin(),
+                                                     expected.end());
+
+        CheckSorted(poly3);
+        ASSERT_EQ(poly3, expected_poly);
+
+        poly1 += y;
+        CheckSorted(poly1);
+        ASSERT_EQ(poly1, expected_poly);
     }
 }
 
@@ -348,6 +401,10 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -359,6 +416,10 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -370,6 +431,10 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -381,6 +446,10 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
     }
 
@@ -401,6 +470,10 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -412,6 +485,10 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -423,6 +500,10 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -434,7 +515,31 @@ TEST(PolynomialArithmetics, Substitution) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 -= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
+    }
+
+    {
+        std::vector<RationalTerm> x{{1, {2, 0}}, {1, {1, 1}}, {2, {0, 1}}};
+        RationalTerm y{1, {2, 0}};
+
+        std::vector<RationalTerm> expected{{1, {1, 1}}, {2, {0, 1}}};
+
+        Polynomial<Rational, LexOrder> poly1(x.begin(), x.end());
+
+        Polynomial<Rational, LexOrder> poly3 = poly1 - y;
+        Polynomial<Rational, LexOrder> expected_poly(expected.begin(),
+                                                     expected.end());
+
+        CheckSorted(poly3);
+        ASSERT_EQ(poly3, expected_poly);
+
+        poly1 -= y;
+        CheckSorted(poly1);
+        ASSERT_EQ(poly1, expected_poly);
     }
 }
 
@@ -454,6 +559,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -465,6 +574,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -476,6 +589,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -487,6 +604,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
     }
 
@@ -504,6 +625,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -515,6 +640,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -526,6 +655,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -537,6 +670,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
     }
 
@@ -555,6 +692,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -566,6 +707,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -577,6 +722,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -588,6 +737,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
     }
 
@@ -605,6 +758,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -616,6 +773,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -627,6 +788,10 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
 
         {
@@ -638,7 +803,67 @@ TEST(PolynomialArithmetics, Multiplication) {
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
+
+            poly1 *= poly2;
+            CheckSorted(poly1);
+            ASSERT_EQ(poly1, expected_poly);
         }
+    }
+
+    {
+        std::vector<RationalTerm> x{{1, {2, 0}}, {1, {1, 1}}, {2, {0, 1}}};
+        RationalTerm y{3, {2, 0}};
+
+        std::vector<RationalTerm> expected{{3, {4, 0}}, {3, {3, 1}}, {6, {2, 1}}};
+
+        Polynomial<Rational, LexOrder> poly1(x.begin(), x.end());
+
+        Polynomial<Rational, LexOrder> poly3 = poly1 * y;
+        Polynomial<Rational, LexOrder> expected_poly(expected.begin(),
+                                                     expected.end());
+
+        CheckSorted(poly3);
+        ASSERT_EQ(poly3, expected_poly);
+
+        poly1 *= y;
+        CheckSorted(poly1);
+        ASSERT_EQ(poly1, expected_poly);
+    }
+}
+
+TEST(TermArithmetics, Division) {
+    {
+        RationalTerm x{1, {2, 3}};
+        RationalTerm y(3, {1, 1});
+        RationalTerm expected({1, 3}, {1, 2});
+
+        auto z = x / y;
+        ASSERT_EQ(z, expected);
+        x /= y;
+        ASSERT_EQ(x, expected);
+    }
+
+    {
+        ModuloTerm<7> x(3, {3});
+        ModuloTerm<7> y(4, {3});
+        ModuloTerm<7> expected(6, {0});
+
+        auto z = x / y;
+        ASSERT_EQ(z, expected);
+        x /= y;
+        ASSERT_EQ(x, expected);
+    }
+
+    {
+        RationalTerm x(1, {4, 2});
+        RationalTerm y(3, {1, 3});
+        ASSERT_DEATH(x / y, "Can't substitute from lower degree");
+    }
+
+    {
+        RationalTerm x(1, {3, 3});
+        RationalTerm y(0, {3, 1});
+        ASSERT_DEATH(x / y, "Can't divide by zero");
     }
 }
 }  // namespace Groebner::Test
