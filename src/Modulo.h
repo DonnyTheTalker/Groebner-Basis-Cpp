@@ -41,9 +41,9 @@ requires IsPrime<Modulus> class Modulo {
 
         bool IsZero() const { return value_ == 0; }
 
-        //        size_t GetModulus() const {
-        //            return Modulus;
-        //        }
+        Modulo Abs() const {
+            return *this;
+        }
 
         Modulo operator-() const { return Modulo<Modulus>(-value_); }
         Modulo operator+() const { return *this; }

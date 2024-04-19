@@ -1,6 +1,7 @@
 #pragma once
 
 #include "PolySystem.h"
+#include "Printer.h"
 
 namespace Groebner {
 
@@ -22,8 +23,16 @@ class GroebnerAlgorithm {
             AutoReduction reduction = AutoReduction::Disabled) {
             poly_system.Reduce();
             if (poly_system.IsEmpty()) {
+                Printer::Instance().PrintMessage(
+                    "Trying to build Groebner basis for empty system. "
+                    "Exiting.",
+                    Printer::CONDITIONS);
                 return;
             }
+            Printer::Instance().PrintMessage(
+                "Building Groebner basis for system:", Printer::CONDITIONS);
+            Printer::Instance().PrintPolySystem(poly_system,
+                                                Printer::CONDITIONS);
             for (size_t i = 0; i < poly_system.GetSize(); ++i) {
                 if (poly_system[i].IsZero()) {
                     continue;
@@ -57,6 +66,7 @@ class GroebnerAlgorithm {
 
         template <IsSupportedField Field, IsComparator Comparator>
         static void ReduceBasisInplace(PolySystem<Field, Comparator>& basis) {
+            // TODO add poly_system.reduce()
             PolySystem<Field, Comparator> temp;
             for (size_t i = 0; i < basis.GetSize(); i++) {
                 if (!CanEraseFromBasisAtPos(basis, i)) {
@@ -87,7 +97,6 @@ class GroebnerAlgorithm {
         static SPolyInfo<Field, Comparator> SPolynomial(
             const Polynomial<Field, Comparator>& lhs,
             const Polynomial<Field, Comparator>& rhs) {
-
             const auto& [lhs_coef, lhs_degree] = lhs.GetLeader();
             const auto& [rhs_coef, rhs_degree] = rhs.GetLeader();
 
@@ -97,6 +106,12 @@ class GroebnerAlgorithm {
 
             auto spoly =
                 lhs * (lcm / lhs.GetLeader()) - rhs * (lcm / rhs.GetLeader());
+
+            PrinterBuffer<Field, Comparator>::Instance()[0] +=
+                (lcm / lhs.GetLeader());
+            PrinterBuffer<Field, Comparator>::Instance()[1] +=
+                (lcm / rhs.GetLeader());
+
             return SPolyInfo(std::move(spoly), std::move(common_degree));
         }
 
@@ -124,7 +139,7 @@ class GroebnerAlgorithm {
             return ReducePolynomial(std::move(temp), poly_system);
         }
 
-        template<IsSupportedField Field, IsComparator Comparator>
+        template <IsSupportedField Field, IsComparator Comparator>
         static bool InIdeal(const Polynomial<Field, Comparator>& poly,
                             const PolySystem<Field, Comparator>& poly_system) {
             auto basis = BuildGB(poly_system);
@@ -139,11 +154,24 @@ class GroebnerAlgorithm {
             auto leader = poly_system[pos].GetLeader();
             for (size_t j = 0; j < pos; j++) {
                 auto other_leader = poly_system[j].GetLeader();
+
+                Printer::Instance().PrintMessage("", Printer::CONDITIONS);
+                Printer::Instance().PrintMessage(
+                    "Building S-Polynomial for $f_{" + std::to_string(pos + 1) +
+                        "}$ and $f_{" + std::to_string(j + 1) + "}$",
+                    Printer::CONDITIONS);
+                PrinterBuffer<Field, Comparator>::Instance().SetBuffer(2);
+
                 SPolyInfo info = SPolynomial(poly_system[pos], poly_system[j]);
 
                 if (leader.degree + other_leader.degree == info.common_degree) {
+                    Printer::Instance().PrintSPolynomialSkip(poly_system, pos, j, Printer::DETAILS);
                     continue;
                 }
+
+                Printer::Instance().PrintSPolynomial(info.s_poly, poly_system,
+                                                     pos, j, Printer::DETAILS);
+
                 auto remainder =
                     ReducePolynomial(std::move(info.s_poly), poly_system);
                 if (!remainder.IsZero()) {

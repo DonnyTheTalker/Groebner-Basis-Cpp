@@ -34,6 +34,10 @@ bool Rational::IsZero() const {
     return numerator_ == 0;
 }
 
+Rational Rational::Abs() const {
+    return Rational(std::abs(numerator_), denominator_);
+}
+
 Rational& Rational::operator+=(const Rational& other) {
     ValueType lcm = std::lcm(denominator_, other.denominator_);
     numerator_ = numerator_ * (lcm / denominator_) +

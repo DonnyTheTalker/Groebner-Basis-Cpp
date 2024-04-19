@@ -17,6 +17,7 @@ class Rational {
         Rational operator+() const;
 
         bool IsZero() const;
+        Rational Abs() const;
 
         Rational& operator+=(const Rational& other);
         Rational& operator-=(const Rational& other);
