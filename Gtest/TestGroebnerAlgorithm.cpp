@@ -485,23 +485,23 @@ TEST(BasisBuild, BasisAlready) {
 }
 
 TEST(BasisBuild, Advanced) {
-        {
-            Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
-            Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
 
+        Polynomial<Rational, LexOrder> x1{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y1{{1, {1, 1}}, {-1, {0, 2}}};
+        Polynomial<Rational, LexOrder> z1{{1, {0, 3}}, {{1, 2}, {0, 1}}};
 
-            Polynomial<Rational, LexOrder> x1{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
-            Polynomial<Rational, LexOrder> y1{{1, {1, 1}}, {-1, {0, 2}}};
-            Polynomial<Rational, LexOrder> z1{{1, {0, 3}}, {{1, 2}, {0, 1}}};
+        PolySystem<Rational, LexOrder> basis({x, y});
+        PolySystem<Rational, LexOrder> expected({x1, y1, z1});
 
-            PolySystem<Rational, LexOrder> basis({x, y});
-            PolySystem<Rational, LexOrder> expected({x1, y1, z1});
-
-            basis = GroebnerAlgorithm::BuildGB(basis);
-            CheckEqual(basis, expected);
-            ASSERT_FALSE(basis.IsEmpty());
-            ASSERT_EQ(basis.GetSize(), 3);
-        }
+        basis = GroebnerAlgorithm::BuildGB(basis);
+        CheckEqual(basis, expected);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 3);
+    }
 
     {
         Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
@@ -521,6 +521,42 @@ TEST(BasisBuild, Advanced) {
         ASSERT_EQ(basis.GetSize(), 3);
     }
     // TODO add example with another degree ordering and with modulo field
+}
+
+TEST(InIdeal, Basic) {
+    {
+        Polynomial<Rational, LexOrder> x{{1, {1}}};
+        Polynomial<Rational, LexOrder> y{{1, {0, 1}}};
+        Polynomial<Rational, LexOrder> aim{{2, {1, 1}}, {3, {1}}, {1, {0, 1}}};
+        ASSERT_TRUE(GroebnerAlgorithm::InIdeal(aim, {x, y}));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{7, {1}}};
+        Polynomial<Rational, LexOrder> y{{5, {0, 1}}};
+        Polynomial<Rational, LexOrder> aim{{2, {1, 1}}, {3, {1}}, {1, {0, 1}}};
+        ASSERT_TRUE(GroebnerAlgorithm::InIdeal(aim, {x, y}));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, LexOrder> aim{
+            {1, {4, 0}}, {2, {2, 3}},  {3, {2, 1}}, {2, {2, 0}}, {3, {1, 4}},
+            {1, {1, 2}}, {-1, {0, 5}}, {2, {0, 1}}, {1, {0, 0}}};
+        ASSERT_FALSE(GroebnerAlgorithm::InIdeal(aim, {x, y}));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, LexOrder> aim{
+            {1, {4, 0}}, {2, {2, 3}}, {1, {2, 2}},  {1, {2, 1}}, {2, {2}},
+            {3, {1, 4}}, {1, {1, 2}}, {-1, {0, 5}}, {1, {0, 2}}, {1, {0}}};
+        ASSERT_TRUE(GroebnerAlgorithm::InIdeal(aim, {x, y}));
+    }
 }
 
 }  // namespace Groebner::Test

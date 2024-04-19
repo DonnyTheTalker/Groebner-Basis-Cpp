@@ -16,7 +16,7 @@ class GroebnerAlgorithm {
     public:
         GroebnerAlgorithm() = delete;
 
-        template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+        template <IsSupportedField Field, IsComparator Comparator>
         static void BuildGBInplace(
             PolySystem<Field, Comparator>& poly_system,
             AutoReduction reduction = AutoReduction::Disabled) {
@@ -35,7 +35,7 @@ class GroebnerAlgorithm {
             }
         }
 
-        template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+        template <IsSupportedField Field, IsComparator Comparator>
         static PolySystem<Field, Comparator> BuildGB(
             const PolySystem<Field, Comparator>& poly_system,
             AutoReduction reduction = AutoReduction::Disabled) {
@@ -55,7 +55,7 @@ class GroebnerAlgorithm {
             return common_degree;
         }
 
-        template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+        template <IsSupportedField Field, IsComparator Comparator>
         static void ReduceBasisInplace(PolySystem<Field, Comparator>& basis) {
             PolySystem<Field, Comparator> temp;
             for (size_t i = 0; i < basis.GetSize(); i++) {
@@ -75,7 +75,7 @@ class GroebnerAlgorithm {
             }
         }
 
-        template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+        template <IsSupportedField Field, IsComparator Comparator>
         static PolySystem<Field, Comparator> ReduceBasis(
             const PolySystem<Field, Comparator>& basis) {
             PolySystem<Field, Comparator> result(basis);
@@ -83,7 +83,7 @@ class GroebnerAlgorithm {
             return result;
         }
 
-        template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+        template <IsSupportedField Field, IsComparator Comparator>
         static SPolyInfo<Field, Comparator> SPolynomial(
             const Polynomial<Field, Comparator>& lhs,
             const Polynomial<Field, Comparator>& rhs) {
@@ -100,7 +100,7 @@ class GroebnerAlgorithm {
             return SPolyInfo(std::move(spoly), std::move(common_degree));
         }
 
-        template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+        template <IsSupportedField Field, IsComparator Comparator>
         static Polynomial<Field, Comparator> ReducePolynomial(
             Polynomial<Field, Comparator>&& poly,
             const PolySystem<Field, Comparator>& poly_system) {
@@ -116,12 +116,20 @@ class GroebnerAlgorithm {
             return rem;
         }
 
-        template <IsSupportedField Field, IsComparator Comparator = LexOrder>
+        template <IsSupportedField Field, IsComparator Comparator>
         static Polynomial<Field, Comparator> ReducePolynomial(
             const Polynomial<Field, Comparator>& poly,
             const PolySystem<Field, Comparator>& poly_system) {
             Polynomial<Field, Comparator> temp = poly;
             return ReducePolynomial(std::move(temp), poly_system);
+        }
+
+        template<IsSupportedField Field, IsComparator Comparator>
+        static bool InIdeal(const Polynomial<Field, Comparator>& poly,
+                            const PolySystem<Field, Comparator>& poly_system) {
+            auto basis = BuildGB(poly_system);
+            auto rem = ReducePolynomial(poly, basis);
+            return rem.IsZero();
         }
 
     private:
