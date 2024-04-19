@@ -14,6 +14,7 @@ set(HEADER_FILES
         PolySystem.h
         GroebnerAlgorithm.h
         ListFwd.h
+        VariableOrder.h
 )
 
 set(SOURCE_FILES
@@ -21,6 +22,7 @@ set(SOURCE_FILES
         Monomial.cpp
         MonomialCompare.cpp
         Modulo.cpp
+        VariableOrder.cpp
 )
 
 add_library(src STATIC ${SOURCE_FILES})
