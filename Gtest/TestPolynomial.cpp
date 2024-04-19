@@ -105,22 +105,22 @@ TEST(PolynomialBasic, Leading) {
 
         {
             Polynomial<Rational, LexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[2]);
+            ASSERT_EQ(poly.GetLeader(), x[2]);
         }
 
         {
             Polynomial<Rational, ReverseLexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[0]);
+            ASSERT_EQ(poly.GetLeader(), x[0]);
         }
 
         {
             Polynomial<Rational, GrlexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[2]);
+            ASSERT_EQ(poly.GetLeader(), x[2]);
         }
 
         {
             Polynomial<Rational, GrevlexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[2]);
+            ASSERT_EQ(poly.GetLeader(), x[2]);
         }
     }
 
@@ -131,22 +131,22 @@ TEST(PolynomialBasic, Leading) {
 
         {
             Polynomial<Rational, LexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[0]);
+            ASSERT_EQ(poly.GetLeader(), x[0]);
         }
 
         {
             Polynomial<Rational, ReverseLexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[0]);
+            ASSERT_EQ(poly.GetLeader(), x[0]);
         }
 
         {
             Polynomial<Rational, GrlexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[0]);
+            ASSERT_EQ(poly.GetLeader(), x[0]);
         }
 
         {
             Polynomial<Rational, GrevlexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[0]);
+            ASSERT_EQ(poly.GetLeader(), x[0]);
         }
     }
 
@@ -156,22 +156,22 @@ TEST(PolynomialBasic, Leading) {
 
         {
             Polynomial<Rational, LexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[0]);
+            ASSERT_EQ(poly.GetLeader(), x[0]);
         }
 
         {
             Polynomial<Rational, ReverseLexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[0]);
+            ASSERT_EQ(poly.GetLeader(), x[0]);
         }
 
         {
             Polynomial<Rational, GrlexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[2]);
+            ASSERT_EQ(poly.GetLeader(), x[2]);
         }
 
         {
             Polynomial<Rational, GrevlexOrder> poly(x.begin(), x.end());
-            EXPECT_EQ(poly.GetLeader(), x[1]);
+            ASSERT_EQ(poly.GetLeader(), x[1]);
         }
     }
 }
@@ -207,7 +207,7 @@ TEST(Polynomial, ReduceByLeaderCoef) {
         Polynomial<Rational, LexOrder> expected = {
             {1, {2, 0}}, {{1, 3}, {1, 1}}, {{2, 3}, {0, 1}}};
         x.ReduceByLeaderCoef();
-        EXPECT_EQ(x, expected);
+        ASSERT_EQ(x, expected);
     }
 
     {
@@ -216,7 +216,7 @@ TEST(Polynomial, ReduceByLeaderCoef) {
         Polynomial<Modulo<5>, LexOrder> expected = {
             {1, {2, 0}}, {2, {1, 1}}, {4, {0, 1}}};
         x.ReduceByLeaderCoef();
-        EXPECT_EQ(x, expected);
+        ASSERT_EQ(x, expected);
     }
 }
 

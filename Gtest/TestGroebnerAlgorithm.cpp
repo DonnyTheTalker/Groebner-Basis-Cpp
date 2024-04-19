@@ -18,8 +18,8 @@ TEST(Builder, Lcm) {
         Monomial y{1, 2, 3};
         Monomial z = GroebnerAlgorithm::FindLcm(x, y);
 
-        EXPECT_EQ(z, Monomial({1, 2, 3}));
-        EXPECT_EQ(z.GetSumDegree(), 6);
+        ASSERT_EQ(z, Monomial({1, 2, 3}));
+        ASSERT_EQ(z.GetSumDegree(), 6);
     }
 
     {
@@ -27,8 +27,8 @@ TEST(Builder, Lcm) {
         Monomial y{2, 4, 5};
         Monomial z = GroebnerAlgorithm::FindLcm(x, y);
 
-        EXPECT_EQ(z, Monomial({2, 4, 5}));
-        EXPECT_EQ(z.GetSumDegree(), 11);
+        ASSERT_EQ(z, Monomial({2, 4, 5}));
+        ASSERT_EQ(z.GetSumDegree(), 11);
     }
 
     {
@@ -36,8 +36,8 @@ TEST(Builder, Lcm) {
         Monomial y({2, 2, 1});
         Monomial z = GroebnerAlgorithm::FindLcm(x, y);
 
-        EXPECT_EQ(z, Monomial({2, 2, 3}));
-        EXPECT_EQ(z.GetSumDegree(), 7);
+        ASSERT_EQ(z, Monomial({2, 2, 3}));
+        ASSERT_EQ(z.GetSumDegree(), 7);
     }
 }
 
@@ -47,9 +47,9 @@ TEST(Builder, SPoly) {
         Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {1, {1, 0}}};
 
         SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        EXPECT_EQ(z.common_degree, Monomial({2, 1}));
+        ASSERT_EQ(z.common_degree, Monomial({2, 1}));
         Polynomial<Rational, LexOrder> expected_poly{{-2, {2, 0}}, {1, {0, 1}}};
-        EXPECT_EQ(z.s_poly, expected_poly);
+        ASSERT_EQ(z.s_poly, expected_poly);
     }
 
     {
@@ -57,30 +57,30 @@ TEST(Builder, SPoly) {
         Polynomial<Modulo<3>, LexOrder> y{{1, {1, 1}}, {1, {1, 0}}};
 
         SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        EXPECT_EQ(z.common_degree, Monomial({2, 1}));
+        ASSERT_EQ(z.common_degree, Monomial({2, 1}));
         Polynomial<Modulo<3>, LexOrder> expected_poly{{-2, {2, 0}},
                                                       {1, {0, 1}}};
-        EXPECT_EQ(z.s_poly, expected_poly);
+        ASSERT_EQ(z.s_poly, expected_poly);
     }
 
     {
         Polynomial<Rational, LexOrder> x({{2, {1, 2}}});
         Polynomial<Rational, LexOrder> y({{1, {2, 1}}});
         SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        EXPECT_EQ(z.common_degree, Monomial({2, 2}));
+        ASSERT_EQ(z.common_degree, Monomial({2, 2}));
         Polynomial<Rational, LexOrder> expected_poly;
-        EXPECT_EQ(z.s_poly, expected_poly);
-        EXPECT_TRUE(z.s_poly.IsZero());
+        ASSERT_EQ(z.s_poly, expected_poly);
+        ASSERT_TRUE(z.s_poly.IsZero());
     }
 
     {
         Polynomial<Modulo<3>, LexOrder> x({{2, {1, 2}}});
         Polynomial<Modulo<3>, LexOrder> y({{1, {2, 1}}});
         SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        EXPECT_EQ(z.common_degree, Monomial({2, 2}));
+        ASSERT_EQ(z.common_degree, Monomial({2, 2}));
         Polynomial<Modulo<3>, LexOrder> expected_poly;
-        EXPECT_EQ(z.s_poly, expected_poly);
-        EXPECT_TRUE(z.s_poly.IsZero());
+        ASSERT_EQ(z.s_poly, expected_poly);
+        ASSERT_TRUE(z.s_poly.IsZero());
     }
 
     {
@@ -88,10 +88,10 @@ TEST(Builder, SPoly) {
         Polynomial<Rational, ReverseLexOrder> y{{1, {1, 1}}, {1, {1, 0}}};
 
         SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        EXPECT_EQ(z.common_degree, Monomial({1, 1}));
+        ASSERT_EQ(z.common_degree, Monomial({1, 1}));
         Polynomial<Rational, ReverseLexOrder> expected_poly{{2, {3, 1}},
                                                             {-1, {1, 2}}};
-        EXPECT_EQ(z.s_poly, expected_poly);
+        ASSERT_EQ(z.s_poly, expected_poly);
     }
 
     {
@@ -99,10 +99,10 @@ TEST(Builder, SPoly) {
         Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {1, {1, 0}}};
 
         SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        EXPECT_EQ(z.common_degree, Monomial({2, 1}));
+        ASSERT_EQ(z.common_degree, Monomial({2, 1}));
         Polynomial<Rational, GrlexOrder> expected_poly{{-2, {2, 0}},
                                                        {1, {0, 1}}};
-        EXPECT_EQ(z.s_poly, expected_poly);
+        ASSERT_EQ(z.s_poly, expected_poly);
     }
 
     {
@@ -110,10 +110,10 @@ TEST(Builder, SPoly) {
         Polynomial<Rational, GrevlexOrder> y{{1, {1, 1}}, {1, {1, 0}}};
 
         SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        EXPECT_EQ(z.common_degree, Monomial({2, 1}));
+        ASSERT_EQ(z.common_degree, Monomial({2, 1}));
         Polynomial<Rational, GrevlexOrder> expected_poly{{-2, {2, 0}},
                                                          {1, {0, 1}}};
-        EXPECT_EQ(z.s_poly, expected_poly);
+        ASSERT_EQ(z.s_poly, expected_poly);
     }
 }
 
@@ -126,8 +126,8 @@ TEST(Reduction, Simple) {
             x, PolySystem<Rational, LexOrder>({y}));
         Polynomial<Rational, LexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -138,8 +138,8 @@ TEST(Reduction, Simple) {
             std::move(x), PolySystem<Rational, LexOrder>({y}));
         Polynomial<Rational, LexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -151,8 +151,8 @@ TEST(Reduction, Simple) {
             x, PolySystem<Rational, LexOrder>({y1, y2, y3}));
         Polynomial<Rational, LexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -164,8 +164,8 @@ TEST(Reduction, Simple) {
             x, PolySystem<Rational, LexOrder>({y1, y2}));
         Polynomial<Rational, LexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -177,8 +177,8 @@ TEST(Reduction, Simple) {
             x, PolySystem<Modulo<3>, LexOrder>({y1, y2}));
         Polynomial<Modulo<3>, LexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -191,8 +191,8 @@ TEST(Reduction, Simple) {
                 x, PolySystem<Rational, ReverseLexOrder>({y1, y2}));
         Polynomial<Rational, ReverseLexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -205,8 +205,8 @@ TEST(Reduction, Simple) {
                 x, PolySystem<Rational, GrlexOrder>({y1, y2}));
         Polynomial<Rational, GrlexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -219,8 +219,8 @@ TEST(Reduction, Simple) {
                 x, PolySystem<Rational, GrevlexOrder>({y1, y2}));
         Polynomial<Rational, GrevlexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 
     {
@@ -231,8 +231,8 @@ TEST(Reduction, Simple) {
             x, PolySystem<Rational, LexOrder>({y2}));
         Polynomial<Rational, LexOrder> expected;
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z, expected);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z, expected);
     }
 }
 
@@ -245,11 +245,11 @@ TEST(Reduction, Remainder) {
             x, PolySystem<Rational, LexOrder>({y1}));
         Polynomial<Rational, LexOrder> expected{{1, {0, 1}}};
 
-        EXPECT_FALSE(z.IsZero());
-        EXPECT_EQ(z, expected);
-        EXPECT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetSize(), 1);
+        ASSERT_FALSE(z.IsZero());
+        ASSERT_EQ(z, expected);
+        ASSERT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetSize(), 1);
     }
 
     {
@@ -261,11 +261,11 @@ TEST(Reduction, Remainder) {
                 x, PolySystem<Rational, GrlexOrder>({y1}));
         Polynomial<Rational, GrlexOrder> expected{{1, {0, 1}}};
 
-        EXPECT_FALSE(z.IsZero());
-        EXPECT_EQ(z, expected);
-        EXPECT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetSize(), 1);
+        ASSERT_FALSE(z.IsZero());
+        ASSERT_EQ(z, expected);
+        ASSERT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetSize(), 1);
     }
 
     {
@@ -277,11 +277,11 @@ TEST(Reduction, Remainder) {
                 x, PolySystem<Rational, GrevlexOrder>({y1}));
         Polynomial<Rational, GrevlexOrder> expected{{1, {0, 1}}};
 
-        EXPECT_FALSE(z.IsZero());
-        EXPECT_EQ(z, expected);
-        EXPECT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetSize(), 1);
+        ASSERT_FALSE(z.IsZero());
+        ASSERT_EQ(z, expected);
+        ASSERT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetSize(), 1);
     }
 
     {
@@ -293,11 +293,11 @@ TEST(Reduction, Remainder) {
                 x, PolySystem<Rational, ReverseLexOrder>({y1}));
         Polynomial<Rational, ReverseLexOrder> expected{{1, {0, 1}}};
 
-        EXPECT_FALSE(z.IsZero());
-        EXPECT_EQ(z, expected);
-        EXPECT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetSize(), 1);
+        ASSERT_FALSE(z.IsZero());
+        ASSERT_EQ(z, expected);
+        ASSERT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetSize(), 1);
     }
 
     {
@@ -308,11 +308,11 @@ TEST(Reduction, Remainder) {
             x, PolySystem<Rational, LexOrder>({y1}));
         Polynomial<Rational, LexOrder> expected{{1, {0, 1}}};
 
-        EXPECT_FALSE(z.IsZero());
-        EXPECT_EQ(z, expected);
-        EXPECT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
-        EXPECT_EQ(z.GetSize(), 1);
+        ASSERT_FALSE(z.IsZero());
+        ASSERT_EQ(z, expected);
+        ASSERT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
+        ASSERT_EQ(z.GetSize(), 1);
     }
 
     {
@@ -322,9 +322,9 @@ TEST(Reduction, Remainder) {
         Polynomial<Rational, LexOrder> z = GroebnerAlgorithm::ReducePolynomial(
             x, PolySystem<Rational, LexOrder>({y1}));
 
-        EXPECT_FALSE(z.IsZero());
-        EXPECT_EQ(z, x);
-        EXPECT_EQ(z.GetSize(), 2);
+        ASSERT_FALSE(z.IsZero());
+        ASSERT_EQ(z, x);
+        ASSERT_EQ(z.GetSize(), 2);
     }
 
     {
@@ -335,8 +335,8 @@ TEST(Reduction, Remainder) {
         Polynomial<Rational, LexOrder> z = GroebnerAlgorithm::ReducePolynomial(
             x, PolySystem<Rational, LexOrder>({y1, y2}));
 
-        EXPECT_TRUE(z.IsZero());
-        EXPECT_EQ(z.GetSize(), 0);
+        ASSERT_TRUE(z.IsZero());
+        ASSERT_EQ(z.GetSize(), 0);
     }
 
     {
@@ -347,12 +347,12 @@ TEST(Reduction, Remainder) {
             x, PolySystem<Rational, LexOrder>({y1}));
         Polynomial<Rational, LexOrder> expected{{1, {1, 0}}, {-1, {1, 0, 1}}};
 
-        EXPECT_FALSE(z.IsZero());
-        EXPECT_EQ(z, expected);
-        EXPECT_EQ(z.GetLeader(), RationalTerm({-1, {1, 0, 1}}));
-        EXPECT_EQ(z.GetAt(0), RationalTerm({-1, {1, 0, 1}}));
-        EXPECT_EQ(z.GetAt(1), RationalTerm({1, {1, 0}}));
-        EXPECT_EQ(z.GetSize(), 2);
+        ASSERT_FALSE(z.IsZero());
+        ASSERT_EQ(z, expected);
+        ASSERT_EQ(z.GetLeader(), RationalTerm({-1, {1, 0, 1}}));
+        ASSERT_EQ(z.GetAt(0), RationalTerm({-1, {1, 0, 1}}));
+        ASSERT_EQ(z.GetAt(1), RationalTerm({1, {1, 0}}));
+        ASSERT_EQ(z.GetSize(), 2);
     }
 }
 
@@ -367,8 +367,8 @@ TEST(BasisReduction, Simple) {
 
         basis = GroebnerAlgorithm::ReduceBasis(basis);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 2);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 2);
     }
 
     {
@@ -381,8 +381,8 @@ TEST(BasisReduction, Simple) {
 
         GroebnerAlgorithm::ReduceBasisInplace(basis);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 2);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 2);
     }
 
     {
@@ -394,8 +394,8 @@ TEST(BasisReduction, Simple) {
 
         basis = GroebnerAlgorithm::ReduceBasis(basis);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 1);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 1);
     }
 
     {
@@ -410,8 +410,8 @@ TEST(BasisReduction, Simple) {
 
         basis = GroebnerAlgorithm::ReduceBasis(basis);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 2);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 2);
     }
 
     {
@@ -426,8 +426,8 @@ TEST(BasisReduction, Simple) {
 
         GroebnerAlgorithm::ReduceBasisInplace(basis);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 2);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 2);
     }
 }
 
@@ -447,8 +447,8 @@ TEST(BasisReduction, Advanced) {
 
         GroebnerAlgorithm::ReduceBasisInplace(basis);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 3);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 3);
     }
 
     // TODO add example with another degree ordering and with modulo field
@@ -465,8 +465,8 @@ TEST(BasisBuild, BasisAlready) {
 
         GroebnerAlgorithm::BuildGBInplace(basis);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 3);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 3);
     }
 
     {
@@ -479,8 +479,8 @@ TEST(BasisBuild, BasisAlready) {
 
         GroebnerAlgorithm::BuildGBInplace(basis, AutoReduction::Enabled);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 3);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 3);
     }
 }
 
@@ -499,8 +499,8 @@ TEST(BasisBuild, Advanced) {
     //
     //        basis = GroebnerAlgorithm::BuildGB(basis);
     //        CheckEqual(basis, expected);
-    //        EXPECT_FALSE(basis.IsEmpty());
-    //        EXPECT_EQ(basis.GetSize(), 3);
+    //        ASSERT_FALSE(basis.IsEmpty());
+    //        ASSERT_EQ(basis.GetSize(), 3);
     //    }
 
     {
@@ -517,8 +517,8 @@ TEST(BasisBuild, Advanced) {
 
         basis = GroebnerAlgorithm::BuildGB(basis, AutoReduction::Enabled);
         CheckEqual(basis, expected);
-        EXPECT_FALSE(basis.IsEmpty());
-        EXPECT_EQ(basis.GetSize(), 3);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 3);
     }
     // TODO add example with another degree ordering and with modulo field
 }

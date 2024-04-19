@@ -49,6 +49,7 @@ IncludeBlocks: Preserve
 IndentAccessModifiers: true
 IndentCaseLabels: true
 IndentPPDirectives: None
+InsertNewlineAtEOF: true
 IndentWidth: 4
 KeepEmptyLinesAtTheStartOfBlocks: true
 MaxEmptyLinesToKeep: 1

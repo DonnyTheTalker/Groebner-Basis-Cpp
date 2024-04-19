@@ -6,8 +6,7 @@
 
 namespace Groebner {
 
-Monomial::Monomial(size_t size) : degrees_(size) {
-}
+Monomial::Monomial(size_t size) : degrees_(size) {}
 
 Monomial::Monomial(std::vector<DegreeType>&& degrees)
     : degrees_(std::move(degrees)) {

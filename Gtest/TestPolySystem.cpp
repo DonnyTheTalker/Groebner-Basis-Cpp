@@ -37,8 +37,8 @@ TEST(PolySystemBasic, FastPushPop) {
     }
 
     {
-        EXPECT_DEATH(sys.SwapAndPop(4), "Out of bounds");
-        EXPECT_DEATH(sys.AddAndSwap(4, x), "Out of bounds");
+        ASSERT_DEATH(sys.SwapAndPop(4), "Out of bounds");
+        ASSERT_DEATH(sys.AddAndSwap(4, x), "Out of bounds");
     }
 }
 }  // namespace Groebner::Test

@@ -17,9 +17,7 @@ struct Term {
             return coef == other.coef && degree == other.degree;
         }
 
-        bool operator!=(const Term& other) const {
-            return !(*this == other);
-        }
+        bool operator!=(const Term& other) const { return !(*this == other); }
 };
 
 using RationalTerm = Term<Rational>;
