@@ -26,19 +26,27 @@ class GroebnerAlgorithm {
                 Printer::Instance().PrintMessage(
                     "Trying to build Groebner basis for empty system. "
                     "Exiting.",
-                    Printer::CONDITIONS);
+                    Printer::CONDITIONS, Printer::NEW_LINE);
                 return;
             }
-            Printer::Instance().PrintMessage(
-                "Building Groebner basis for system:", Printer::CONDITIONS);
-            Printer::Instance().PrintPolySystem(poly_system,
-                                                Printer::CONDITIONS);
+            Printer::Instance()
+                .PrintMessage("Building Groebner basis for system:",
+                              Printer::CONDITIONS, Printer::NEW_LINE)
+                .PrintPolySystem(poly_system, Printer::CONDITIONS,
+                                 Printer::DOUBLE_NEW_LINE);
+
             for (size_t i = 0; i < poly_system.GetSize(); ++i) {
                 if (poly_system[i].IsZero()) {
                     continue;
                 }
                 AddRemindersToPolyAtPos(i, poly_system);
             }
+
+            Printer::Instance()
+                .PrintMessage("Basis:", Printer::CONDITIONS, Printer::NEW_LINE)
+                .PrintPolySystem(poly_system, Printer::CONDITIONS,
+                                 Printer::DOUBLE_NEW_LINE);
+
             if (reduction == AutoReduction::Enabled) {
                 ReduceBasisInplace(poly_system);
             }
@@ -67,22 +75,48 @@ class GroebnerAlgorithm {
         template <IsSupportedField Field, IsComparator Comparator>
         static void ReduceBasisInplace(PolySystem<Field, Comparator>& basis) {
             // TODO add poly_system.reduce()
+
+            Printer::Instance()
+                .PrintMessage("Reducing basis", Printer::CONDITIONS,
+                              Printer::NEW_LINE)
+                .PrintPolySystem(basis, Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
+
             PolySystem<Field, Comparator> temp;
             for (size_t i = 0; i < basis.GetSize(); i++) {
                 if (!CanEraseFromBasisAtPos(basis, i)) {
+                    Printer::Instance().PrintPolyStays(basis[i], i,
+                                                       Printer::DETAILS);
                     temp.Add(basis[i]);
+                } else {
+                    Printer::Instance().PrintPolyErased(basis[i], i,
+                                                        Printer::DETAILS);
                 }
             }
+
+            Printer::Instance()
+                .PrintMessage("", Printer::DETAILS, Printer::NEW_LINE)
+                .PrintMessage("Current basis", Printer::DETAILS,
+                              Printer::NEW_LINE)
+                .PrintPolySystem(temp, Printer::DETAILS, Printer::DOUBLE_NEW_LINE);
+
             basis = PolySystem<Field, Comparator>();
             for (size_t i = 0; i < temp.GetSize(); i++) {
                 const Polynomial<Field, Comparator> cur = temp.SwapAndPop(i);
-                basis.Add(std::move(ReducePolynomial(cur, temp)));
+                auto reduced = ReducePolynomial(cur, temp);
+                Printer::Instance().PrintPolyReplaced(
+                    cur, reduced, i, Printer::DETAILS, Printer::DOUBLE_NEW_LINE);
+                basis.Add(std::move(reduced));
                 temp.AddAndSwap(i, cur);
             }
 
             for (size_t i = 0; i < basis.GetSize(); i++) {
                 basis[i].ReduceByLeaderCoef();
             }
+
+            Printer::Instance()
+                .PrintMessage("Reduced basis", Printer::CONDITIONS,
+                              Printer::NEW_LINE)
+                .PrintPolySystem(basis, Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
         }
 
         template <IsSupportedField Field, IsComparator Comparator>
@@ -107,6 +141,7 @@ class GroebnerAlgorithm {
             auto spoly =
                 lhs * (lcm / lhs.GetLeader()) - rhs * (lcm / rhs.GetLeader());
 
+            PrinterBuffer<Field, Comparator>::Instance().SetBuffer(2);
             PrinterBuffer<Field, Comparator>::Instance()[0] +=
                 (lcm / lhs.GetLeader());
             PrinterBuffer<Field, Comparator>::Instance()[1] +=
@@ -119,8 +154,14 @@ class GroebnerAlgorithm {
         static Polynomial<Field, Comparator> ReducePolynomial(
             Polynomial<Field, Comparator>&& poly,
             const PolySystem<Field, Comparator>& poly_system) {
-            Polynomial<Field, Comparator> rem;
 
+            Printer::Instance().PrintReducePolynomial(
+                poly, poly_system, Printer::DETAILS, Printer::NEW_LINE);
+            PrinterBuffer<Field, Comparator>::Instance().SetBuffer(
+                poly_system.GetSize());
+
+            Polynomial<Field, Comparator> rem;
+            auto copy = poly;
             while (!poly.IsZero()) {
                 if (!DividePoly(poly, poly_system)) {
                     rem += poly.GetLeader();
@@ -128,6 +169,8 @@ class GroebnerAlgorithm {
                 }
             }
 
+            Printer::Instance().PrintRemainder(
+                copy, poly_system, rem, Printer::DETAILS, Printer::NEW_LINE);
             return rem;
         }
 
@@ -140,11 +183,36 @@ class GroebnerAlgorithm {
         }
 
         template <IsSupportedField Field, IsComparator Comparator>
-        static bool InIdeal(const Polynomial<Field, Comparator>& poly,
-                            const PolySystem<Field, Comparator>& poly_system) {
+        static bool IsInIdeal(
+            const Polynomial<Field, Comparator>& poly,
+            const PolySystem<Field, Comparator>& poly_system) {
             auto basis = BuildGB(poly_system);
+
+            Printer::Instance()
+                .PrintMessage("Checking if ", Printer::CONDITIONS,
+                              Printer::NO_NEW_LINE)
+                .PrintPolynomial(poly, Printer::CONDITIONS,
+                                 Printer::NO_NEW_LINE)
+                .PrintMessage(" belongs to ideal", Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
+
             auto rem = ReducePolynomial(poly, basis);
-            return rem.IsZero();
+
+            if (rem.IsZero()) {
+                Printer::Instance()
+                    .PrintMessage("Polynomial is reduced to zero",
+                                  Printer::CONDITIONS, Printer::NEW_LINE)
+                    .PrintMessage("Polynomial belongs to ideal",
+                                  Printer::CONDITIONS,
+                                  Printer::DOUBLE_NEW_LINE);
+                return true;
+            }
+
+            Printer::Instance()
+                .PrintMessage("Polynomial is reduced to non-zero polynomial",
+                              Printer::CONDITIONS, Printer::NEW_LINE)
+                .PrintMessage("Polynomial does not belongs to ideal",
+                              Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
+            return false;
         }
 
     private:
@@ -154,29 +222,29 @@ class GroebnerAlgorithm {
             auto leader = poly_system[pos].GetLeader();
             for (size_t j = 0; j < pos; j++) {
                 auto other_leader = poly_system[j].GetLeader();
-
-                Printer::Instance().PrintMessage("", Printer::CONDITIONS);
-                Printer::Instance().PrintMessage(
-                    "Building S-Polynomial for $f_{" + std::to_string(pos + 1) +
-                        "}$ and $f_{" + std::to_string(j + 1) + "}$",
-                    Printer::CONDITIONS);
-                PrinterBuffer<Field, Comparator>::Instance().SetBuffer(2);
-
+                Printer::Instance().PrintBuildingSPoly(pos, j, Printer::CONDITIONS, Printer::NEW_LINE);
                 SPolyInfo info = SPolynomial(poly_system[pos], poly_system[j]);
 
                 if (leader.degree + other_leader.degree == info.common_degree) {
-                    Printer::Instance().PrintSPolynomialSkip(poly_system, pos, j, Printer::DETAILS);
+                    Printer::Instance().SkipSPolynomial(poly_system, pos, j,
+                                                        Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
                     continue;
                 }
 
                 Printer::Instance().PrintSPolynomial(info.s_poly, poly_system,
-                                                     pos, j, Printer::DETAILS);
+                                                     pos, j, Printer::DETAILS, Printer::NEW_LINE);
 
                 auto remainder =
                     ReducePolynomial(std::move(info.s_poly), poly_system);
+
                 if (!remainder.IsZero()) {
                     remainder.ReduceByLeaderCoef();
+                    Printer::Instance().PrintAddToSystem(
+                        remainder, poly_system.GetSize(), Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
                     poly_system.Add(std::move(remainder));
+                } else {
+                    Printer::Instance().PrintMessage(
+                        "S-Polynomial reduced to zero", Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
                 }
             }
         }
@@ -192,8 +260,9 @@ class GroebnerAlgorithm {
                 if (degree.IsDivisible(other_degree)) {
                     assert(!poly_system[i].GetLeader().coef.IsZero() &&
                            "Can't divide by zero");
-                    poly -= poly_system[i] *
-                            (poly.GetLeader() / poly_system[i].GetLeader());
+                    auto temp = poly.GetLeader() / poly_system[i].GetLeader();
+                    PrinterBuffer<Field, Comparator>::Instance()[i] += temp;
+                    poly -= poly_system[i] * temp;
                     return true;
                 }
             }
@@ -207,10 +276,11 @@ class GroebnerAlgorithm {
             const auto& [coef, degree] = basis[pos].GetLeader();
             for (size_t j = 0; j < basis.GetSize(); j++) {
                 const auto& [other_coef, other_degree] = basis[j].GetLeader();
-                if (pos != j &&
-                    ((pos < j && degree.IsDivisible(other_degree)) ||
-                     (pos > j && degree != other_degree &&
-                      degree.IsDivisible(other_degree)))) {
+                if ((pos < j && degree.IsDivisible(other_degree)) ||
+                    (pos > j && degree != other_degree &&
+                     degree.IsDivisible(other_degree))) {
+                    Printer::Instance().PrintPolyInBasisReduced(
+                        basis, pos, j, Printer::DETAILS, Printer::NEW_LINE);
                     return true;
                 }
             }

@@ -8,39 +8,60 @@ Printer& Printer::Instance() {
     return instance;
 }
 
-void Printer::SetDescriptionLevel(DescriptionLevel level) {
-    description_level_ = level;
-}
 
-void Printer::PrintMessage(const std::string& message,
-                           Groebner::Printer::DescriptionLevel description) {
-    if (description_level_ & description) {
-        std::cout << message << " \\\\\n";
+Printer& Printer::PrintNewLine(Printer::NewLinePolicy policy) {
+    for (size_t i = 0; i < policy; i++) {
+        *out_ << "\\\\\n";
     }
+    return *this;
 }
 
-void Printer::ResetOutputBuffer() {
-    std::cout.rdbuf(cout_buf_);
-    cout_buf_ = std::cout.rdbuf();
+Printer& Printer::SetDescriptionLevel(DescriptionLevel level) {
+    description_level_ = level;
+    return *this;
 }
 
-void Printer::SetOutputBuffer(std::ofstream& out) {
-    ResetOutputBuffer();
-    std::cout.rdbuf(out.rdbuf());
+Printer& Printer::PrintMessage(const std::string& message,
+                           Groebner::Printer::DescriptionLevel description, NewLinePolicy policy) {
+    if (description_level_ & description) {
+        *out_ << message;
+        PrintNewLine(policy);
+    }
+    return *this;
 }
 
-void Printer::PrintDegree(const Monomial& degree) {
+Printer& Printer::SetOutputBuffer(std::ofstream& out) {
+    out_ = &out;
+    return *this;
+}
+
+Printer& Printer::PrintBuildingSPoly(size_t i, size_t j,
+                                     Printer::DescriptionLevel description,
+                                     Printer::NewLinePolicy policy) {
+    if (!(description_level_ & description)) {
+        return *this;
+    }
+
+    *out_ << "Building S-Polynomial for $f_{" + std::to_string(i + 1) +
+                     "}$ and $f_{" + std::to_string(j + 1) + "}$";
+    PrintNewLine(policy);
+    return *this;
+}
+
+Printer& Printer::PrintDegree(const Monomial& degree, NewLinePolicy policy) {
     for (size_t i = 0; i < degree.GetSize(); i++) {
         auto value = degree.GetDegree(i);
         if (value == 0) {
             continue;
         }
-        std::cout << "$" << VariableOrder::Instance().GetAt(i);
+        *out_ << "$" << VariableOrder::Instance().GetAt(i);
         if (value > 1) {
-            std::cout << "^" << value;
+            *out_ << "^" << value;
         }
-        std::cout << "$";
+        *out_ << "$";
     }
+    PrintNewLine(policy);
+    return *this;
 }
 
 }  // namespace Groebner
