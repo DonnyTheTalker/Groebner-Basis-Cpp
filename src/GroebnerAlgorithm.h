@@ -210,7 +210,7 @@ class GroebnerAlgorithm {
             Printer::Instance()
                 .PrintMessage("Polynomial is reduced to non-zero polynomial",
                               Printer::CONDITIONS, Printer::NEW_LINE)
-                .PrintMessage("Polynomial does not belongs to ideal",
+                .PrintMessage("Polynomial does not belong to ideal",
                               Printer::CONDITIONS, Printer::DOUBLE_NEW_LINE);
             return false;
         }
