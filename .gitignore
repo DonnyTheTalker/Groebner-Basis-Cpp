@@ -33,3 +33,5 @@
 
 cmake-build-debug/
 .idea/
+cmake-build-debug-coverage
+cmake-build-release
