@@ -8,7 +8,7 @@
 namespace Groebner {
 namespace Details {
     using Comparators =
-        List<LexOrder, ReverseLexOrder, GrlexOrder, GrevlexOrder>;
+        List<LexOrder, GrlexOrder, GrevlexOrder>;
 }
 
 template <typename T>
