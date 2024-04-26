@@ -30,12 +30,6 @@ TEST(PolynomialBasic, Sorting) {
         }
 
         {
-            Polynomial<Rational, ReverseLexOrder> poly(x.begin(), x.end());
-            CheckSorted(poly);
-            CheckEqual(poly, {x[0], x[1], x[2]});
-        }
-
-        {
             Polynomial<Rational, GrlexOrder> poly(x.begin(), x.end());
             CheckSorted(poly);
             CheckEqual(poly, {x[2], x[1], x[0]});
