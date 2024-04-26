@@ -84,17 +84,6 @@ TEST(Builder, SPoly) {
     }
 
     {
-        Polynomial<Rational, ReverseLexOrder> x{{2, {2, 1}}, {1, {0, 1}}};
-        Polynomial<Rational, ReverseLexOrder> y{{1, {1, 1}}, {1, {1, 0}}};
-
-        SPolyInfo z = GroebnerAlgorithm::SPolynomial(x, y);
-        ASSERT_EQ(z.common_degree, Monomial({1, 1}));
-        Polynomial<Rational, ReverseLexOrder> expected_poly{{2, {3, 1}},
-                                                            {-1, {1, 2}}};
-        ASSERT_EQ(z.s_poly, expected_poly);
-    }
-
-    {
         Polynomial<Rational, GrlexOrder> x{{2, {2, 1}}, {1, {0, 1}}};
         Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {1, {1, 0}}};
 
@@ -182,20 +171,6 @@ TEST(Reduction, Simple) {
     }
 
     {
-        Polynomial<Rational, ReverseLexOrder> x{{{1, 2}, {2, 1}}, {2, {0, 1}}};
-        Polynomial<Rational, ReverseLexOrder> y1{{1, {1, 0}}};
-        Polynomial<Rational, ReverseLexOrder> y2{{1, {0, 1}}};
-
-        Polynomial<Rational, ReverseLexOrder> z =
-            GroebnerAlgorithm::ReducePolynomial(
-                x, PolySystem<Rational, ReverseLexOrder>({y1, y2}));
-        Polynomial<Rational, ReverseLexOrder> expected;
-
-        ASSERT_TRUE(z.IsZero());
-        ASSERT_EQ(z, expected);
-    }
-
-    {
         Polynomial<Rational, GrlexOrder> x{{{1, 2}, {2, 1}}, {2, {0, 1}}};
         Polynomial<Rational, GrlexOrder> y1{{1, {1, 0}}};
         Polynomial<Rational, GrlexOrder> y2{{1, {0, 1}}};
@@ -276,22 +251,6 @@ TEST(Reduction, Remainder) {
             GroebnerAlgorithm::ReducePolynomial(
                 x, PolySystem<Rational, GrevlexOrder>({y1}));
         Polynomial<Rational, GrevlexOrder> expected{{1, {0, 1}}};
-
-        ASSERT_FALSE(z.IsZero());
-        ASSERT_EQ(z, expected);
-        ASSERT_EQ(z.GetLeader(), RationalTerm({1, {0, 1}}));
-        ASSERT_EQ(z.GetAt(0), RationalTerm({1, {0, 1}}));
-        ASSERT_EQ(z.GetSize(), 1);
-    }
-
-    {
-        Polynomial<Rational, ReverseLexOrder> x{{1, {2, 1}}, {1, {0, 1}}};
-        Polynomial<Rational, ReverseLexOrder> y1{{1, {1, 0}}};
-
-        Polynomial<Rational, ReverseLexOrder> z =
-            GroebnerAlgorithm::ReducePolynomial(
-                x, PolySystem<Rational, ReverseLexOrder>({y1}));
-        Polynomial<Rational, ReverseLexOrder> expected{{1, {0, 1}}};
 
         ASSERT_FALSE(z.IsZero());
         ASSERT_EQ(z, expected);

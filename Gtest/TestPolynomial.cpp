@@ -109,11 +109,6 @@ TEST(PolynomialBasic, Leading) {
         }
 
         {
-            Polynomial<Rational, ReverseLexOrder> poly(x.begin(), x.end());
-            ASSERT_EQ(poly.GetLeader(), x[0]);
-        }
-
-        {
             Polynomial<Rational, GrlexOrder> poly(x.begin(), x.end());
             ASSERT_EQ(poly.GetLeader(), x[2]);
         }
@@ -135,11 +130,6 @@ TEST(PolynomialBasic, Leading) {
         }
 
         {
-            Polynomial<Rational, ReverseLexOrder> poly(x.begin(), x.end());
-            ASSERT_EQ(poly.GetLeader(), x[0]);
-        }
-
-        {
             Polynomial<Rational, GrlexOrder> poly(x.begin(), x.end());
             ASSERT_EQ(poly.GetLeader(), x[0]);
         }
@@ -156,11 +146,6 @@ TEST(PolynomialBasic, Leading) {
 
         {
             Polynomial<Rational, LexOrder> poly(x.begin(), x.end());
-            ASSERT_EQ(poly.GetLeader(), x[0]);
-        }
-
-        {
-            Polynomial<Rational, ReverseLexOrder> poly(x.begin(), x.end());
             ASSERT_EQ(poly.GetLeader(), x[0]);
         }
 
@@ -246,21 +231,6 @@ TEST(PolynomialArithmetics, Addition) {
         }
 
         {
-            Polynomial<Rational, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Rational, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Rational, ReverseLexOrder> poly3 = poly1 + poly2;
-            Polynomial<Rational, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 += poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
             Polynomial<Rational, GrlexOrder> poly1(x.begin(), x.end());
             Polynomial<Rational, GrlexOrder> poly2(y.begin(), y.end());
             Polynomial<Rational, GrlexOrder> poly3 = poly1 + poly2;
@@ -305,21 +275,6 @@ TEST(PolynomialArithmetics, Addition) {
             Polynomial<Modulo<7>, LexOrder> poly3 = poly1 + poly2;
             Polynomial<Modulo<7>, LexOrder> expected_poly(expected.begin(),
                                                           expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 += poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
-            Polynomial<Modulo<7>, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly3 = poly1 + poly2;
-            Polynomial<Modulo<7>, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
@@ -408,21 +363,6 @@ TEST(PolynomialArithmetics, Substitution) {
         }
 
         {
-            Polynomial<Rational, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Rational, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Rational, ReverseLexOrder> poly3 = poly1 - poly2;
-            Polynomial<Rational, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 -= poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
             Polynomial<Rational, GrlexOrder> poly1(x.begin(), x.end());
             Polynomial<Rational, GrlexOrder> poly2(y.begin(), y.end());
             Polynomial<Rational, GrlexOrder> poly3 = poly1 - poly2;
@@ -467,21 +407,6 @@ TEST(PolynomialArithmetics, Substitution) {
             Polynomial<Modulo<7>, LexOrder> poly3 = poly1 - poly2;
             Polynomial<Modulo<7>, LexOrder> expected_poly(expected.begin(),
                                                           expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 -= poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
-            Polynomial<Modulo<7>, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly3 = poly1 - poly2;
-            Polynomial<Modulo<7>, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
@@ -566,21 +491,6 @@ TEST(PolynomialArithmetics, Multiplication) {
         }
 
         {
-            Polynomial<Rational, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Rational, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Rational, ReverseLexOrder> poly3 = poly1 * poly2;
-            Polynomial<Rational, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 *= poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
             Polynomial<Rational, GrlexOrder> poly1(x.begin(), x.end());
             Polynomial<Rational, GrlexOrder> poly2(y.begin(), y.end());
             Polynomial<Rational, GrlexOrder> poly3 = poly1 * poly2;
@@ -622,21 +532,6 @@ TEST(PolynomialArithmetics, Multiplication) {
             Polynomial<Rational, LexOrder> poly3 = poly1 * poly2;
             Polynomial<Rational, LexOrder> expected_poly(expected.begin(),
                                                          expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 *= poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
-            Polynomial<Rational, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Rational, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Rational, ReverseLexOrder> poly3 = poly1 * poly2;
-            Polynomial<Rational, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
@@ -699,21 +594,6 @@ TEST(PolynomialArithmetics, Multiplication) {
         }
 
         {
-            Polynomial<Modulo<7>, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly3 = poly1 * poly2;
-            Polynomial<Modulo<7>, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 *= poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
             Polynomial<Modulo<7>, GrlexOrder> poly1(x.begin(), x.end());
             Polynomial<Modulo<7>, GrlexOrder> poly2(y.begin(), y.end());
             Polynomial<Modulo<7>, GrlexOrder> poly3 = poly1 * poly2;
@@ -755,21 +635,6 @@ TEST(PolynomialArithmetics, Multiplication) {
             Polynomial<Modulo<7>, LexOrder> poly3 = poly1 * poly2;
             Polynomial<Modulo<7>, LexOrder> expected_poly(expected.begin(),
                                                           expected.end());
-
-            CheckSorted(poly3);
-            ASSERT_EQ(poly3, expected_poly);
-
-            poly1 *= poly2;
-            CheckSorted(poly1);
-            ASSERT_EQ(poly1, expected_poly);
-        }
-
-        {
-            Polynomial<Modulo<7>, ReverseLexOrder> poly1(x.begin(), x.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly2(y.begin(), y.end());
-            Polynomial<Modulo<7>, ReverseLexOrder> poly3 = poly1 * poly2;
-            Polynomial<Modulo<7>, ReverseLexOrder> expected_poly(
-                expected.begin(), expected.end());
 
             CheckSorted(poly3);
             ASSERT_EQ(poly3, expected_poly);
