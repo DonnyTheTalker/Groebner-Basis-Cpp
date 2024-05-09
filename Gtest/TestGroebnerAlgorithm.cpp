@@ -410,6 +410,25 @@ TEST(BasisReduction, Advanced) {
         ASSERT_EQ(basis.GetSize(), 3);
     }
 
+    {
+        Polynomial<Modulo<5>, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Modulo<5>, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        Polynomial<Modulo<5>, LexOrder> z{{2, {0, 3}}, {1, {0, 1}}};
+
+        PolySystem<Modulo<5>, LexOrder> basis({x, y, z});
+
+        Polynomial<Modulo<5>, LexOrder> x1{{1, {2, 0}}, {1, {0, 2}}, {1, {0}}};
+        Polynomial<Modulo<5>, LexOrder> y1{{1, {1, 1}}, {-1, {0, 2}}};
+        Polynomial<Modulo<5>, LexOrder> z1{{1, {0, 3}}, {3, {0, 1}}};
+
+        PolySystem<Modulo<5>, LexOrder> expected({x1, y1, z1});
+
+        GroebnerAlgorithm::ReduceBasisInplace(basis);
+        CheckEqual(basis, expected);
+        ASSERT_FALSE(basis.IsEmpty());
+        ASSERT_EQ(basis.GetSize(), 3);
+    }
+
     // TODO add example with another degree ordering and with modulo field
 }
 
@@ -518,4 +537,254 @@ TEST(IsInIdeal, Basic) {
     }
 }
 
+TEST(IdealComparison, Basic) {
+    {
+        Polynomial<Modulo<5>, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Modulo<5>, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Modulo<5>, LexOrder> basis1({x, y});
+        PolySystem<Modulo<5>, LexOrder> basis2({y, x});
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, LexOrder> basis1({x, y});
+        PolySystem<Rational, LexOrder> basis2({y, x});
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrlexOrder> basis1({x, y});
+        PolySystem<Rational, GrlexOrder> basis2({y, x});
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrevlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrevlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrevlexOrder> basis1({x, y});
+        PolySystem<Rational, GrevlexOrder> basis2({y, x});
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, LexOrder> basis1({x, y, x});
+        PolySystem<Rational, LexOrder> basis2({y, x, x, y, x});
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrlexOrder> basis1({x, y, x});
+        PolySystem<Rational, GrlexOrder> basis2({y, x, x, y, x});
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrevlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrevlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrevlexOrder> basis1({x, y, x});
+        PolySystem<Rational, GrevlexOrder> basis2({y, x, x, y, x});
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+}
+
+TEST(IdealComparison, NotEqual) {
+    {
+        Polynomial<Modulo<5>, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Modulo<5>, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Modulo<5>, LexOrder> basis1({x});
+        PolySystem<Modulo<5>, LexOrder> basis2({y});
+        ASSERT_FALSE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, LexOrder> basis1({x});
+        PolySystem<Rational, LexOrder> basis2({y});
+        ASSERT_FALSE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrlexOrder> basis1({x});
+        PolySystem<Rational, GrlexOrder> basis2({y});
+        ASSERT_FALSE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrlexOrder> basis1({x});
+        PolySystem<Rational, GrlexOrder> basis2({y});
+        ASSERT_FALSE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, LexOrder> w{{1, {2, 1}}, {1, {2, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> q{{1, {1, 1}}, {-1, {0, 2}}};
+
+        PolySystem<Rational, LexOrder> basis1({x, y});
+        PolySystem<Rational, LexOrder> basis2({w, q});
+
+        ASSERT_FALSE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, GrlexOrder> w{
+            {1, {2, 1}}, {1, {2, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> q{{1, {1, 1}}, {-1, {0, 2}}};
+
+        PolySystem<Rational, GrlexOrder> basis1({x, y});
+        PolySystem<Rational, GrlexOrder> basis2({w, q});
+
+        ASSERT_FALSE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrevlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrevlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, GrevlexOrder> w{
+            {1, {2, 1}}, {1, {2, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrevlexOrder> q{{1, {1, 1}}, {-1, {0, 2}}};
+
+        PolySystem<Rational, GrevlexOrder> basis1({x, y});
+        PolySystem<Rational, GrevlexOrder> basis2({w, q});
+
+        ASSERT_FALSE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+}
+
+TEST(IdealComparison, Equal) {
+    {
+        Polynomial<Modulo<5>, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Modulo<5>, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Modulo<5>, LexOrder> basis1({x, y});
+        PolySystem<Modulo<5>, LexOrder> basis2 =
+            GroebnerAlgorithm::BuildGB(basis1);
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, LexOrder> basis1({x, y});
+        PolySystem<Rational, LexOrder> basis2 =
+            GroebnerAlgorithm::BuildGB(basis1);
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrlexOrder> basis1({x, y});
+        PolySystem<Rational, GrlexOrder> basis2 =
+            GroebnerAlgorithm::BuildGB(basis1);
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrevlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrevlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrevlexOrder> basis1({x, y});
+        PolySystem<Rational, GrevlexOrder> basis2 =
+            GroebnerAlgorithm::BuildGB(basis1);
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, LexOrder> basis1({x, y});
+        PolySystem<Rational, LexOrder> basis2 =
+            GroebnerAlgorithm::BuildGB(basis1, AutoReduction::Enabled);
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrlexOrder> basis1({x, y});
+        PolySystem<Rational, GrlexOrder> basis2 =
+            GroebnerAlgorithm::BuildGB(basis1, AutoReduction::Enabled);
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrevlexOrder> x{
+            {1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrevlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+        PolySystem<Rational, GrevlexOrder> basis1({x, y});
+        PolySystem<Rational, GrevlexOrder> basis2 =
+            GroebnerAlgorithm::BuildGB(basis1, AutoReduction::Enabled);
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, LexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, LexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, LexOrder> w{{1, {1, 0}}};
+        Polynomial<Rational, LexOrder> q{{1, {0, 1}}};
+        Polynomial<Rational, LexOrder> p{{1, {0}}};
+
+        PolySystem<Rational, LexOrder> basis1({x, y, w, q, p});
+        PolySystem<Rational, LexOrder> basis2({w, q, p});
+
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, GrlexOrder> w{{1, {1, 0}}};
+        Polynomial<Rational, GrlexOrder> q{{1, {0, 1}}};
+        Polynomial<Rational, GrlexOrder> p{{1, {0}}};
+
+        PolySystem<Rational, GrlexOrder> basis1({x, y, w, q, p});
+        PolySystem<Rational, GrlexOrder> basis2({w, q, p});
+
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+
+    {
+        Polynomial<Rational, GrlexOrder> x{{1, {2, 0}}, {1, {1, 1}}, {1, {0, 0}}};
+        Polynomial<Rational, GrlexOrder> y{{1, {1, 1}}, {-1, {0, 2}}};
+
+        Polynomial<Rational, GrlexOrder> w{{1, {1, 0}}};
+        Polynomial<Rational, GrlexOrder> q{{1, {0, 1}}};
+        Polynomial<Rational, GrlexOrder> p{{1, {0}}};
+
+        PolySystem<Rational, GrlexOrder> basis1({x, y, w, q, p});
+        PolySystem<Rational, GrlexOrder> basis2({w, q, p});
+
+        ASSERT_TRUE(GroebnerAlgorithm::AreEqualIdeals(basis1, basis2));
+    }
+}
 }  // namespace Groebner::Test
