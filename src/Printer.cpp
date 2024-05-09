@@ -8,8 +8,8 @@ Printer& Printer::Instance() {
     return instance;
 }
 
-
 Printer& Printer::PrintNewLine(Printer::NewLinePolicy policy) {
+    assert(out_ && "No output buffer");
     for (size_t i = 0; i < policy; i++) {
         *out_ << "\\\\\n";
     }
@@ -22,8 +22,10 @@ Printer& Printer::SetDescriptionLevel(DescriptionLevel level) {
 }
 
 Printer& Printer::PrintMessage(const std::string& message,
-                           Groebner::Printer::DescriptionLevel description, NewLinePolicy policy) {
+                               Groebner::Printer::DescriptionLevel description,
+                               NewLinePolicy policy) {
     if (description_level_ & description) {
+        assert(out_ && "No output buffer");
         *out_ << message;
         PrintNewLine(policy);
     }
@@ -35,6 +37,11 @@ Printer& Printer::SetOutputBuffer(std::ofstream& out) {
     return *this;
 }
 
+Printer& Printer::ResetOutputBuffer() {
+    out_ = nullptr;
+    return *this;
+}
+
 Printer& Printer::PrintBuildingSPoly(size_t i, size_t j,
                                      Printer::DescriptionLevel description,
                                      Printer::NewLinePolicy policy) {
@@ -42,26 +49,29 @@ Printer& Printer::PrintBuildingSPoly(size_t i, size_t j,
         return *this;
     }
 
-    *out_ << "Building S-Polynomial for $f_{" + std::to_string(i + 1) +
-                     "}$ and $f_{" + std::to_string(j + 1) + "}$";
-    PrintNewLine(policy);
+    assert(out_ && "No output buffer");
+    PrintMessage("Building S-Polynomial for $f_{" + std::to_string(i + 1) +
+                     "}$ and $f_{" + std::to_string(j + 1) + "}$",
+                 description, NO_NEW_LINE)
+        .PrintNewLine(policy);
     return *this;
 }
 
+// TODO add description level
 Printer& Printer::PrintDegree(const Monomial& degree, NewLinePolicy policy) {
+    assert(out_ && "No output buffer");
     for (size_t i = 0; i < degree.GetSize(); i++) {
         auto value = degree.GetDegree(i);
         if (value == 0) {
             continue;
         }
-        *out_ << "$" << VariableOrder::Instance().GetAt(i);
+        PrintMessage("$" + VariableOrder::Instance().GetAt(i), NONE, NO_NEW_LINE);
         if (value > 1) {
-            *out_ << "^" << value;
+            PrintMessage("^", NONE, NO_NEW_LINE);
         }
-        *out_ << "$";
+        PrintMessage("$", NONE, NO_NEW_LINE);
     }
     PrintNewLine(policy);
     return *this;
 }
-
 }  // namespace Groebner

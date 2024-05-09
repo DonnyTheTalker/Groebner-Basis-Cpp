@@ -86,8 +86,6 @@ class PrinterBuffer {
         std::vector<Polynomial<Field, Comparator>> buffer_;
 };
 
-// TODO maybe print methods will return Printer&
-// to make smth like Printner.PrintMessage("").PrintSystem("")
 class Printer {
     private:
         Printer() = default;
@@ -96,6 +94,7 @@ class Printer {
     public:
         static Printer& Instance();
         Printer& SetOutputBuffer(std::ofstream& out);
+        Printer& ResetOutputBuffer();
 
         enum DescriptionLevel {
             NONE = 0x0,
@@ -114,8 +113,7 @@ class Printer {
         Printer& PrintNewLine(NewLinePolicy policy);
 
         Printer& SetDescriptionLevel(DescriptionLevel level);
-        // TODO add enum class NewLinePolicy : NoNewLine, NewLine, DoubleNewLine
-        // TODO use \newline as static const string
+        // TODO add private PrintMessage without description check
         Printer& PrintMessage(const std::string& message,
                               DescriptionLevel description,
                               NewLinePolicy policy = NewLinePolicy::NEW_LINE);
@@ -124,6 +122,7 @@ class Printer {
         Printer& PrintField(DescriptionLevel description,
                             NewLinePolicy policy = NEW_LINE) {
             if (description_level_ & description) {
+                assert(out_ && "No output buffer");
                 Details::FieldPrinter<Field>::Print(*out_);
                 PrintNewLine(policy);
             }
@@ -144,15 +143,17 @@ class Printer {
             if (!(description_level_ & description)) {
                 return *this;
             }
+
+            assert(out_ && "No output buffer");
             if (poly.IsZero()) {
-                *out_ << "$0$";
+                PrintMessage("$0$", description, NO_NEW_LINE);
             }
             for (size_t i = 0; i < poly.GetSize(); i++) {
                 auto [coef, degree] = poly.GetAt(i);
                 if (i > 0 && coef > 0) {
-                    *out_ << " + ";
+                    PrintMessage(" + ", description, NO_NEW_LINE);
                 } else if (i > 0 && coef < 0) {
-                    *out_ << " $-$ ";
+                    PrintMessage(" $-$ ", description, NO_NEW_LINE);
                 }
                 if (DoPrintCoef(coef.Abs(), degree)) {
                     Details::CoefPrinter<Field>::Print(coef.Abs(), *out_);
@@ -172,8 +173,10 @@ class Printer {
                 return *this;
             }
 
+            assert(out_ && "No output buffer");
             for (size_t i = 0; i < poly_system.GetSize(); i++) {
-                *out_ << "$f_{" << i + 1 << "}$: ";
+                PrintMessage("$f_{" + std::to_string(i + 1) + "}$: ",
+                             description, NO_NEW_LINE);
                 PrintPolynomial(
                     poly_system[i], description,
                     i + 1 == poly_system.GetSize() ? NO_NEW_LINE : NEW_LINE);
@@ -193,38 +196,31 @@ class Printer {
                 return *this;
             }
 
-            *out_ << "$S$ = ";
-            *out_ << "$($";
+            assert(out_ && "No output buffer");
+
+            PrintMessage("$S$ = $($", description, NO_NEW_LINE);
             PrintPolynomial(PrinterBuffer<Field, Comparator>::Instance()[0],
                             description, NO_NEW_LINE);
-            *out_ << "$)$";
-            *out_ << "$f_{" << lhs_pos + 1 << "}$";
-            *out_ << " $-$ " << "$($";
+            PrintMessage(
+                "$)$$f_{" + std::to_string(lhs_pos + 1) + "}$" + " $-$ $($",
+                description, NO_NEW_LINE);
             PrintPolynomial(PrinterBuffer<Field, Comparator>::Instance()[1],
                             description, NO_NEW_LINE);
-            *out_ << "$)$" << "$f_{" << rhs_pos + 1 << "}$" << " = ";
-
-            *out_ << "$($";
+            PrintMessage("$)$$f_{" + std::to_string(rhs_pos + 1) + "}$ = $($",
+                         description, NO_NEW_LINE);
             PrintPolynomial(PrinterBuffer<Field, Comparator>::Instance()[0],
                             description, NO_NEW_LINE);
-            *out_ << "$)$";
-            *out_ << "$($";
+            PrintMessage("$)$$($", description, NO_NEW_LINE);
             PrintPolynomial(poly_system[lhs_pos], description, NO_NEW_LINE);
-            *out_ << "$)$ ";
-            *out_ << "$-$ ";
-
-            *out_ << "$($";
+            PrintMessage("$)$ $-$ $($", description, NO_NEW_LINE);
             PrintPolynomial(PrinterBuffer<Field, Comparator>::Instance()[1],
                             description, NO_NEW_LINE);
-            *out_ << "$)$";
-
-            *out_ << "$($";
+            PrintMessage("$)$$($", description, NO_NEW_LINE);
             PrintPolynomial(poly_system[rhs_pos], description, NO_NEW_LINE);
-            *out_ << "$)$ ";
-            *out_ << "= ";
-
+            PrintMessage("$)$ = ", description, NO_NEW_LINE);
             PrintPolynomial(s_poly, description, NO_NEW_LINE);
             PrintNewLine(policy);
+
             return *this;
         }
 
@@ -236,18 +232,26 @@ class Printer {
             if (!(description_level_ & description)) {
                 return *this;
             }
-            *out_ << "Leader degree of " << "$f_{" << lhs_pos + 1 << "}$: ";
+
+            assert(out_ && "No output buffer");
+
+            PrintMessage(
+                "Leader degree of $f_{" + std::to_string(lhs_pos + 1) + "}$: ",
+                description, NO_NEW_LINE);
             PrintPolynomial(
                 Polynomial<Field, Comparator>{
                     {poly_system[lhs_pos].GetLeader()}},
                 description, NO_NEW_LINE);
-            *out_ << ", and of " << "$f_{" << rhs_pos + 1 << "}$: ";
+            PrintMessage(", and of $f_{" + std::to_string(rhs_pos + 1) + "}$: ",
+                         description, NO_NEW_LINE);
             PrintPolynomial(
                 Polynomial<Field, Comparator>{
                     {poly_system[rhs_pos].GetLeader()}},
                 description, NO_NEW_LINE);
-            *out_ << " are coprime. Skipping them ";
+            PrintMessage(" are coprime. Skipping them ", description,
+                         NO_NEW_LINE);
             PrintNewLine(policy);
+
             return *this;
         }
 
@@ -259,6 +263,7 @@ class Printer {
             if (!(description_level_ & decription)) {
                 return *this;
             }
+            assert(out_ && "No output buffer");
             PrintMessage("Reducing: ", decription, NO_NEW_LINE);
             PrintPolynomial(poly, decription, NEW_LINE);
 
@@ -278,51 +283,52 @@ class Printer {
                 return *this;
             }
 
+            assert(out_ && "No output buffer");
             PrintPolynomial(poly, description, NO_NEW_LINE);
-            *out_ << " = ";
+            PrintMessage(" = ", description, NO_NEW_LINE);
 
             bool printed = false;
             for (size_t i = 0; i < poly_system.GetSize(); i++) {
                 auto& g_i = PrinterBuffer<Field, Comparator>::Instance()[i];
                 if (!g_i.IsZero()) {
                     if (printed) {
-                        *out_ << " + ";
+                        PrintMessage(" + ", description, NO_NEW_LINE);
                     }
                     printed = true;
-                    *out_ << "(";
+
+                    PrintMessage("(", description, NO_NEW_LINE);
                     PrintPolynomial(g_i, description, NO_NEW_LINE);
-                    *out_ << ")";
-                    *out_ << "$f_{" << i + 1 << "}$";
+                    PrintMessage(")$f_{" + std::to_string(i + 1) + "}$",
+                                 description, NO_NEW_LINE);
                 }
             }
 
             if (!printed) {
-                *out_ << " $r$";
+                PrintMessage(" $r$", description, NO_NEW_LINE);
                 PrintNewLine(policy);
                 return *this;
             }
 
-            *out_ << " + $r$ = ";
+            PrintMessage(" + $r$ = ", description, NO_NEW_LINE);
             printed = false;
             for (size_t i = 0; i < poly_system.GetSize(); i++) {
                 auto& g_i = PrinterBuffer<Field, Comparator>::Instance()[i];
                 if (!g_i.IsZero()) {
                     if (printed) {
-                        *out_ << " + ";
+                        PrintMessage(" + ", description, NO_NEW_LINE);
                     }
                     printed = true;
-                    *out_ << "(";
+                    PrintMessage("(", description, NO_NEW_LINE);
                     PrintPolynomial(g_i, description, NO_NEW_LINE);
-                    *out_ << ")";
-                    *out_ << "(";
+                    PrintMessage(")(", description, NO_NEW_LINE);
                     PrintPolynomial(poly_system[i], description, NO_NEW_LINE);
-                    *out_ << ")";
+                    PrintMessage(")", description, NO_NEW_LINE);
                 }
             }
 
-            *out_ << " + (";
+            PrintMessage(" + (", description, NO_NEW_LINE);
             PrintPolynomial(rem, description, NO_NEW_LINE);
-            *out_ << ")";
+            PrintMessage(")", description, NO_NEW_LINE);
 
             PrintNewLine(policy);
             return *this;
@@ -335,10 +341,10 @@ class Printer {
             if (!(description_level_ & description)) {
                 return *this;
             }
-
-            *out_ << "S-Polynomial reduced to: ";
+            assert(out_ && "No output buffer");
+            PrintMessage("S-Polynomial reduced to: ", description, NO_NEW_LINE);
             PrintPolynomial(poly, description, NO_NEW_LINE);
-            *out_ << " = $f_{" << pos + 1 << "}$";
+            PrintMessage(" = $f_{" + std::to_string(pos + 1) + "}$", description, NO_NEW_LINE);
             PrintNewLine(policy);
             return *this;
         };
@@ -351,9 +357,11 @@ class Printer {
                 return *this;
             }
 
-            *out_ << "$f_{" << pos + 1 << "}$ = ";
+            assert(out_ && "No output buffer");
+            PrintMessage("$f_{" + std::to_string(pos + 1) + "}$ = ",
+                         description, NO_NEW_LINE);
             PrintPolynomial(poly, description, NO_NEW_LINE);
-            *out_ << " stays in system";
+            PrintMessage(" stays in system", description, NO_NEW_LINE);
             PrintNewLine(policy);
             return *this;
         }
@@ -366,9 +374,11 @@ class Printer {
                 return *this;
             }
 
-            *out_ << "$f_{" << pos + 1 << "}$ = ";
+            assert(out_ && "No output buffer");
+            PrintMessage("$f_{" + std::to_string(pos + 1) + "}$ = ",
+                         description, NO_NEW_LINE);
             PrintPolynomial(poly, description, NO_NEW_LINE);
-            *out_ << " is erased from system";
+            PrintMessage(" is erased from system", description, NO_NEW_LINE);
             PrintNewLine(policy);
             return *this;
         }
@@ -382,9 +392,12 @@ class Printer {
                 return *this;
             }
 
-            *out_ << "$f_{" << pos + 1 << "}$ = ";
+            assert(out_ && "No output buffer");
+
+            PrintMessage("$f_{" + std::to_string(pos + 1) + "}$ = ",
+                         description, NO_NEW_LINE);
             PrintPolynomial(poly, description, NO_NEW_LINE);
-            *out_ << " is reduced to: ";
+            PrintMessage(" is reduced to: ", description, NO_NEW_LINE);
             PrintPolynomial(reduced, description, NO_NEW_LINE);
             PrintNewLine(policy);
             return *this;
@@ -399,12 +412,16 @@ class Printer {
                 return *this;
             }
 
-            *out_ << "Leader of $f_{" << reduced_pos + 1 << "}$ = ";
+            assert(out_ && "No output buffer");
+            PrintMessage(
+                "Leader of $f_{" + std::to_string(reduced_pos + 1) + "}$ = ",
+                description, NO_NEW_LINE);
             PrintPolynomial(Polynomial<Field, Comparator>(
                                 {poly_system[reduced_pos].GetLeader()}),
                             description, NO_NEW_LINE);
-            *out_ << " is divisible by leader of $f_{" << reducer_pos + 1
-                  << "}$ = ";
+            PrintMessage(" is divisible by leader of $f_{" +
+                             std::to_string(reducer_pos + 1) + "}$ = ",
+                         description, NO_NEW_LINE);
             PrintPolynomial(Polynomial<Field, Comparator>(
                                 {poly_system[reducer_pos].GetLeader()}),
                             description, NO_NEW_LINE);
