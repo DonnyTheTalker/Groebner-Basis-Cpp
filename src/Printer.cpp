@@ -65,11 +65,11 @@ Printer& Printer::PrintDegree(const Monomial& degree, NewLinePolicy policy) {
         if (value == 0) {
             continue;
         }
-        PrintMessage("$" + VariableOrder::Instance().GetAt(i), NONE, NO_NEW_LINE);
+        PrintMessage("$" + VariableOrder::Instance().GetAt(i), ALL, NO_NEW_LINE);
         if (value > 1) {
-            PrintMessage("^", NONE, NO_NEW_LINE);
+            PrintMessage("^" + std::to_string(value), ALL, NO_NEW_LINE);
         }
-        PrintMessage("$", NONE, NO_NEW_LINE);
+        PrintMessage("$", ALL, NO_NEW_LINE);
     }
     PrintNewLine(policy);
     return *this;
